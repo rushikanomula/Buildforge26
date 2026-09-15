@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Arrival failure early warning: prototype</title>
+<title>JivNETRA | Arrival failure early warning</title>
 <style>
 :root {
   --ground: #E6EAE3;
@@ -27,7 +27,12 @@ body { font-family: var(--font); color: var(--ink); background: var(--app); font
 button, select, input { font: inherit; }
 :focus-visible { outline: 2px solid var(--suggest); outline-offset: 2px; }
 
-.top { display: flex; align-items: center; gap: 20px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--rule); }
+.top { display: flex; align-items: center; gap: 20px; min-height: 66px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--rule); }
+.app-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); flex: none; }
+.app-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 8px; background: var(--suggest); color: #fff; font-size: 17px; font-weight: 800; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22); }
+.app-name { display: block; font-size: 17px; font-weight: 800; letter-spacing: 0.015em; line-height: 1; }
+.app-tagline { display: block; margin-top: 3px; color: var(--ink3); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.brand-divider { width: 1px; height: 32px; background: var(--rule); flex: none; }
 .brand h1 { font-size: 19px; margin: 0; font-weight: 700; }
 .brand p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink3); }
 .tabs { display: flex; gap: 2px; margin-left: auto; }
@@ -45,7 +50,7 @@ button, select, input { font: inherit; }
 .btn.quiet { border-color: transparent; color: var(--ink2); text-decoration: underline; text-underline-offset: 3px; padding-left: 4px; padding-right: 4px; }
 .btn[aria-pressed="true"] { background: #E9ECE7; border-color: #8F988D; }
 
-.live { display: grid; grid-template-columns: minmax(0, 1fr) 430px; height: calc(100vh - 59px); }
+.live { display: grid; grid-template-columns: minmax(0, 1fr) 430px; height: calc(100vh - 66px); }
 .mapcol { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
 .mapwrap { position: relative; flex: 1; min-height: 340px; background: var(--ground); overflow: hidden; }
 #map { width: 100%; height: 100%; display: block; }
@@ -161,11 +166,20 @@ table.data .num { text-align: right; }
   .stats { grid-template-columns: 1fr 1fr; }
   .two { grid-template-columns: 1fr; }
   .top { flex-wrap: wrap; }
+  .brand-divider { display: none; }
 }
 </style>
 </head>
 <body>
-<header class="top">
+<header class="top" aria-label="JivNETRA application navigation">
+  <div class="app-brand" aria-label="JivNETRA">
+    <span class="app-mark" aria-hidden="true">J</span>
+    <span>
+      <span class="app-name">JivNETRA</span>
+      <span class="app-tagline">Emergency intelligence</span>
+    </span>
+  </div>
+  <div class="brand-divider" aria-hidden="true"></div>
   <div class="brand">
     <h1>Arrival failure early warning</h1>
     <p>Prototype on a simulated Hyderabad road network. Hospitals are fictional.</p>
