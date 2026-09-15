@@ -1,53 +1,2135 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PulseRoute — EMS Safety Layer</title>
-  <style>
-    :root { --bg:#071525; --panel:#0c2035; --panel2:#102a43; --line:#21405a; --text:#eff7ff; --muted:#91abc1; --teal:#1de0c5; --yellow:#ffc65a; --red:#ff6574; --blue:#55a8ff; }
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-width:1050px}
-    header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid var(--line);background:#091a2d}
-    .brand{display:flex;gap:12px;align-items:center;font-size:20px;font-weight:800;letter-spacing:-.5px}.mark{width:31px;height:31px;border-radius:10px;background:linear-gradient(135deg,var(--teal),#198ae3);display:grid;place-items:center;color:#062037;font-weight:900}.tag{font-size:11px;color:var(--teal);border:1px solid #227b75;padding:4px 9px;border-radius:20px;letter-spacing:.8px}.right{display:flex;gap:20px;align-items:center;color:var(--muted)}.live{color:var(--teal);font-size:12px}.live:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:7px;box-shadow:0 0 11px var(--teal)}
-    main{display:grid;grid-template-columns:250px minmax(470px,1fr) 340px;gap:16px;padding:16px;max-width:1600px;margin:auto}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}.section-title{padding:15px 16px 11px;font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:700}
-    .mission{padding:13px 16px;border-top:1px solid var(--line);cursor:pointer;position:relative}.mission:hover,.mission.selected{background:#12304a}.mission.selected:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}.mission-top{display:flex;justify-content:space-between;font-weight:750}.mission p{margin:5px 0 0;color:var(--muted);font-size:12px}.pill{font-size:10px;padding:3px 7px;border-radius:20px;font-weight:800;letter-spacing:.5px}.critical{background:#512030;color:#ff9fa9}.risk{background:#4d3b19;color:#ffd880}.stable{background:#103e3a;color:#66eedc}
-    .watch{padding:14px 16px;color:var(--muted);border-top:1px solid var(--line);font-size:12px}.watch b{color:var(--text);display:block;margin-bottom:4px}.mini-line{height:35px;margin-top:10px;background:linear-gradient(180deg,transparent 49%,#1c425d 50%,transparent 51%);position:relative}.mini-line svg{width:100%;height:100%}
-    .center{display:flex;flex-direction:column;gap:16px}.alert{padding:17px 19px;border:1px solid #8b3946;background:linear-gradient(90deg,#3a1929,#192b3e);border-radius:14px;display:flex;align-items:center;justify-content:space-between}.alert h1{margin:2px 0 3px;font-size:19px;letter-spacing:-.3px}.alert p{margin:0;color:#b9c8d5}.overline{font-size:10px;color:#ffa1a9;letter-spacing:1.1px;font-weight:800}.risk-score{text-align:right}.risk-score strong{font-size:31px;color:var(--red);line-height:1}.risk-score span{display:block;color:#f5adba;font-size:11px;margin-top:3px}
-    .map{height:385px;position:relative;background:radial-gradient(ellipse at 59% 45%,#1c4960 0,#12334d 30%,#0d263d 58%,#091d30 100%)}.map:before{content:"";position:absolute;inset:0;opacity:.42;background:repeating-linear-gradient(27deg,transparent 0 36px,#4e7182 37px 39px,transparent 40px 83px),repeating-linear-gradient(117deg,transparent 0 50px,#476779 51px 53px,transparent 54px 105px)}.road{position:absolute;height:7px;border-radius:6px;background:#7b9a9e;opacity:.82;transform-origin:left}.road.major{height:12px;background:#5c9ca3}.route{position:absolute;height:9px;border-radius:8px;transform-origin:left;box-shadow:0 0 9px currentColor}.route.red{color:var(--red);background:var(--red)}.route.teal{color:var(--teal);background:var(--teal)}.pin{position:absolute;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;color:white;font-weight:900;border:3px solid #dceeff}.pin span{transform:rotate(45deg);font-size:10px}.vehicle{position:absolute;width:28px;height:28px;border-radius:9px;background:#fff;color:#0d3650;display:grid;place-items:center;box-shadow:0 0 0 8px #1de0c544;font-size:15px}.maplabel{position:absolute;background:#071525dd;border:1px solid #31556e;border-radius:6px;padding:5px 8px;font-size:11px;color:#d8ecfa}.legend{position:absolute;left:15px;bottom:13px;display:flex;gap:13px;background:#071525d9;padding:8px 10px;border-radius:7px;color:#cfdfeb;font-size:11px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}.map-action{position:absolute;right:15px;top:15px;background:#071525dd;border:1px solid #31556e;border-radius:7px;padding:7px 10px;font-size:11px;color:#dbeaf3}
-    .telemetry{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}.metric{padding:14px;border-right:1px solid var(--line)}.metric:last-child{border-right:0}.metric label{display:block;color:var(--muted);font-size:10px;letter-spacing:.7px;text-transform:uppercase}.metric b{font-size:20px;margin-top:4px;display:block}.metric em{font-style:normal;color:var(--red);font-size:11px}
-    .side-card{padding:16px;border-bottom:1px solid var(--line)}.side-card:last-child{border:0}.side-card h2{font-size:14px;margin:0 0 12px}.factor{margin:11px 0}.factor-head{display:flex;justify-content:space-between;font-size:12px}.bar{height:6px;background:#193650;border-radius:8px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;border-radius:8px;background:var(--yellow)}.bar i.red{background:var(--red)}.bar i.blue{background:var(--blue)}
-    .hospital{padding:12px;border:1px solid var(--line);border-radius:9px;margin-top:9px;cursor:pointer;transition:.2s}.hospital:hover,.hospital.chosen{border-color:var(--teal);background:#103438}.hospital-top{display:flex;justify-content:space-between;font-weight:750}.hospital small{color:var(--muted)}.time{font-size:12px;margin-top:5px}.save{color:var(--teal);font-weight:750}.actions{display:flex;gap:8px;margin-top:14px}button{border:0;border-radius:8px;padding:10px 11px;font-weight:800;cursor:pointer;font-size:12px}.primary{background:var(--teal);color:#032821;flex:1}.secondary{background:#19364e;border:1px solid #31536b;color:#d8eaf5}.approved{background:#0f4d45!important;color:#92fff1!important}
-    .timeline{padding:14px 16px 16px}.timeline-head{display:flex;align-items:center;justify-content:space-between}.timeline h2{font-size:14px;margin:0}.stages{display:flex;gap:7px;margin-top:13px}.stage{flex:1;padding:9px 7px;background:#102941;border-radius:7px;text-align:center;color:var(--muted);font-size:10px}.stage.active{background:#4a202c;color:#ffb0b9}.stage b{display:block;color:inherit;font-size:12px;margin-top:3px}.stage.done{background:#123e3d;color:#85eee2}
-    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:#0a443f;color:#cffff9;border:1px solid var(--teal);padding:12px 17px;border-radius:9px;font-weight:700;transition:.35s;box-shadow:0 10px 35px #0008}.toast.show{transform:translateX(-50%) translateY(0)}.modal-backdrop{display:none;position:fixed;inset:0;background:#010a14b8;z-index:5;place-items:center}.modal-backdrop.open{display:grid}.modal{width:420px;background:#0c2035;border:1px solid #31546e;border-radius:15px;padding:22px;box-shadow:0 18px 50px #000a}.modal h2{margin:0 0 5px;font-size:18px}.modal p{color:var(--muted);font-size:12px;margin:0 0 16px}.modal label{display:block;font-size:11px;font-weight:750;color:#b7cede;margin:11px 0 5px}.modal input,.modal textarea{width:100%;background:#071525;color:var(--text);border:1px solid #31536b;border-radius:8px;padding:10px;font:12px/1.4 inherit}.modal textarea{height:92px;resize:none}.modal-actions{display:flex;gap:8px;margin-top:15px}.modal-actions .secondary{flex:1}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrival failure early warning: prototype</title>
+<style>
+:root {
+  --ground: #E6EAE3;
+  --app: #F2F4F0;
+  --panel: #FFFFFF;
+  --ink: #16202A;
+  --ink2: #45505B;
+  --ink3: #737D86;
+  --rule: #D7DCD3;
+  --stable: #1D8A57;
+  --risk: #A96C00;
+  --riskFill: #E3A01B;
+  --crit: #C4352A;
+  --suggest: #5A3ECF;
+  --water: #C5D8E1;
+  --font: Bahnschrift, "DIN Alternate", "Barlow", "Roboto Condensed", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font); color: var(--ink); background: var(--app); font-variant-numeric: tabular-nums; font-size: 14px; }
+button, select, input { font: inherit; }
+:focus-visible { outline: 2px solid var(--suggest); outline-offset: 2px; }
+
+.top { display: flex; align-items: center; gap: 20px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--rule); }
+.brand h1 { font-size: 19px; margin: 0; font-weight: 700; }
+.brand p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink3); }
+.tabs { display: flex; gap: 2px; margin-left: auto; }
+.tabs button { border: 0; background: transparent; padding: 8px 12px; border-radius: 6px; color: var(--ink2); cursor: pointer; font-size: 14px; }
+.tabs button:hover { background: #ECEFEA; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: #fff; }
+.clock { font-size: 24px; font-weight: 600; min-width: 104px; text-align: right; letter-spacing: 0.02em; }
+
+.btn { font-size: 13.5px; padding: 7px 11px; border-radius: 6px; border: 1px solid var(--rule); background: #fff; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: #9EA79C; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3642; }
+.btn.go { background: var(--suggest); border-color: var(--suggest); color: #fff; }
+.btn.go:hover { background: #4A30B8; }
+.btn.quiet { border-color: transparent; color: var(--ink2); text-decoration: underline; text-underline-offset: 3px; padding-left: 4px; padding-right: 4px; }
+.btn[aria-pressed="true"] { background: #E9ECE7; border-color: #8F988D; }
+
+.live { display: grid; grid-template-columns: minmax(0, 1fr) 430px; height: calc(100vh - 59px); }
+.mapcol { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.mapwrap { position: relative; flex: 1; min-height: 340px; background: var(--ground); overflow: hidden; }
+#map { width: 100%; height: 100%; display: block; }
+#map .hit { stroke: transparent; stroke-width: 18; cursor: pointer; }
+#map text { font-family: var(--font); }
+.nodelabel { font-size: 12.5px; fill: var(--ink2); paint-order: stroke; stroke: var(--ground); stroke-width: 4px; stroke-linejoin: round; }
+.hosplabel { font-size: 13px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: var(--ground); stroke-width: 4px; }
+.hospsub { font-size: 11.5px; fill: var(--ink2); paint-order: stroke; stroke: var(--ground); stroke-width: 4px; }
+.faded { opacity: 0.42; }
+.halo { transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-out infinite; }
+@keyframes pulse { from { transform: scale(0.6); opacity: 0.55; } to { transform: scale(1.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .halo { animation: none; opacity: 0.3; } }
+
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.45; max-width: 280px; }
+.tip b { font-weight: 600; }
+.legend { position: absolute; left: 14px; bottom: 12px; background: rgba(255,255,255,0.92); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--ink2); display: grid; grid-template-columns: auto auto; gap: 4px 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 22px; height: 5px; border-radius: 3px; }
+.maphint { position: absolute; right: 14px; top: 12px; font-size: 12.5px; color: var(--ink2); background: rgba(255,255,255,0.92); padding: 6px 10px; border-radius: 6px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 10px 16px; background: var(--panel); border-top: 1px solid var(--rule); }
+.group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.glabel { color: var(--ink3); font-size: 13px; margin-right: 2px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: #fff; padding: 6px 10px; cursor: pointer; font-size: 13px; color: var(--ink2); }
+.seg button[aria-checked="true"] { background: var(--ink); color: #fff; }
+select, input[type="number"] { border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px; background: #fff; color: var(--ink); }
+details.settings { width: 100%; }
+details.cmp summary { cursor: pointer; color: var(--ink2); font-size: 13px; margin-top: 10px; }
+details.settings summary { cursor: pointer; color: var(--ink2); font-size: 13px; }
+.setgrid { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 10px 0 2px; align-items: center; }
+.setgrid label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink2); }
+.setgrid output { min-width: 34px; color: var(--ink); font-weight: 600; }
+
+.panel { background: var(--panel); border-left: 1px solid var(--rule); overflow-y: auto; padding: 16px 20px 28px; }
+.panel h2 { font-size: 14px; font-weight: 600; color: var(--ink2); margin: 0 0 8px; }
+.block + .block { border-top: 1px solid var(--rule); margin-top: 16px; padding-top: 14px; }
+.missionline { font-size: 15px; font-weight: 600; line-height: 1.35; }
+.missionmeta { color: var(--ink3); font-size: 13px; margin-top: 2px; }
+.riskhead { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.pct { font-size: 64px; font-weight: 700; line-height: 0.95; letter-spacing: -0.02em; min-width: 150px; flex: none; }
+.state { font-size: 20px; font-weight: 700; }
+.statesub { color: var(--ink2); font-size: 13.5px; line-height: 1.35; }
+.nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 0; }
+.nums div { margin: 0; }
+.nums dt { font-size: 12px; color: var(--ink3); }
+.nums dd { margin: 2px 0 0; font-size: 20px; font-weight: 600; }
+.nums dd.small { font-size: 12px; color: var(--ink3); font-weight: 400; }
+.outcome { margin-top: 12px; padding: 10px 12px; border-radius: 6px; font-size: 13.5px; line-height: 1.45; }
+.outcome.good { background: #E4F2EA; color: #145C3B; }
+.outcome.bad { background: #F7E3E1; color: #8A2219; }
+#chart { width: 100%; height: auto; display: block; }
+.chartnote { font-size: 12px; color: var(--ink3); margin: 4px 0 0; }
+
+.whyrow { display: grid; grid-template-columns: 160px 1fr 62px; gap: 10px; align-items: center; padding: 3px 0; font-size: 13px; }
+.wl { color: var(--ink); }
+.wbar { height: 8px; background: #EDF0EB; border-radius: 4px; overflow: hidden; }
+.wbar i { display: block; height: 100%; border-radius: 4px; }
+.wm { text-align: right; font-weight: 600; }
+.muted { color: var(--ink3); }
+.small { font-size: 12px; line-height: 1.4; }
+
+.reccard { border: 1.5px solid var(--suggest); border-radius: 8px; padding: 12px 14px; }
+.reccard.quiet { border-color: var(--rule); }
+.rtitle { font-size: 16.5px; font-weight: 700; margin: 0 0 6px; }
+.rsub { margin: 0 0 4px; color: var(--ink2); font-size: 13.5px; line-height: 1.4; }
+.actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+table.opts { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+table.opts th { text-align: left; font-weight: 600; color: var(--ink3); padding: 4px 4px; border-bottom: 1px solid var(--rule); }
+table.opts td { padding: 5px 4px; border-bottom: 1px solid #EEF0EC; }
+table.opts td.num, table.opts th.num { text-align: right; }
+table.opts tr.sel td { font-weight: 600; color: var(--suggest); }
+
+ol.log { list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+ol.log li { display: grid; grid-template-columns: 62px 1fr; gap: 6px; padding: 4px 0; border-bottom: 1px solid #EEF0EC; line-height: 1.4; }
+ol.log time { color: var(--ink3); }
+ol.log li.system span { color: var(--crit); }
+ol.log li.you span { color: var(--suggest); }
+
+/* Replay + about */
+.page { max-width: 1120px; margin: 0 auto; padding: 24px 24px 48px; }
+.page h2 { font-size: 26px; margin: 0 0 6px; }
+.page .lede { color: var(--ink2); max-width: 70ch; line-height: 1.5; margin: 0 0 16px; }
+.runbar { display: flex; gap: 14px 22px; align-items: center; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.runbar label { display: flex; gap: 8px; align-items: center; color: var(--ink2); }
+.progress { flex: 1; min-width: 160px; height: 6px; background: #E3E7E0; border-radius: 3px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--ink); }
+.headline { font-size: 28px; font-weight: 700; line-height: 1.2; margin: 22px 0 16px; max-width: 30ch; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 2px solid var(--ink); }
+.stats div { padding: 12px 16px 12px 0; }
+.stats div + div { padding-left: 16px; border-left: 1px solid var(--rule); }
+.stats b { display: block; font-size: 30px; font-weight: 700; }
+.stats span { color: var(--ink2); font-size: 13px; line-height: 1.35; display: block; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+.page h3 { font-size: 16px; margin: 0 0 8px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th { text-align: left; color: var(--ink3); font-weight: 600; padding: 6px 6px; border-bottom: 1px solid var(--rule); }
+table.data td { padding: 6px 6px; border-bottom: 1px solid #E9ECE6; }
+table.data .num { text-align: right; }
+.bad { color: var(--crit); font-weight: 600; }
+.good { color: var(--stable); font-weight: 600; }
+.note { background: #FFF; border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px; color: var(--ink2); line-height: 1.5; margin-top: 16px; max-width: 80ch; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 16px 0 0; max-width: 78ch; }
+.steps li { counter-increment: s; position: relative; padding: 0 0 16px 40px; line-height: 1.55; color: var(--ink2); }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.steps b { color: var(--ink); }
+
+@media (max-width: 1000px) {
+  .live { grid-template-columns: 1fr; height: auto; }
+  .mapwrap { height: auto; aspect-ratio: 1000 / 593; min-height: 0; flex: none; }
+  .legend, .maphint { display: none; }
+  .panel { border-left: 0; border-top: 1px solid var(--rule); }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .two { grid-template-columns: 1fr; }
+  .top { flex-wrap: wrap; }
+}
+</style>
 </head>
 <body>
-  <header><div class="brand"><div class="mark">+</div>PulseRoute <span class="tag">EMS SAFETY LAYER</span></div><div class="right"><span>Command Centre · Maharashtra 108</span><span class="live">LIVE FEED</span><span>15 Sep · 10:42</span></div></header>
-  <main>
-    <aside class="panel"><div class="section-title">ACTIVE MISSIONS · 12</div>
-      <div class="mission selected"><div class="mission-top"><span>AMB-204</span><span class="pill critical">CRITICAL</span></div><p>Suspected stroke · 20 min target</p></div>
-      <div class="mission"><div class="mission-top"><span>AMB-117</span><span class="pill risk">AT RISK</span></div><p>Cardiac · 30 min target</p></div>
-      <div class="mission"><div class="mission-top"><span>AMB-089</span><span class="pill stable">STABLE</span></div><p>Trauma · 30 min target</p></div>
-      <div class="mission"><div class="mission-top"><span>AMB-331</span><span class="pill stable">STABLE</span></div><p>Respiratory · 30 min target</p></div>
-      <div class="watch"><b>System outlook</b>2 missions need intervention now<div class="mini-line"><svg viewBox="0 0 200 35"><polyline points="0,28 35,25 65,27 100,17 135,19 160,5 200,9" fill="none" stroke="#ff6574" stroke-width="3"/></svg></div></div>
+<header class="top">
+  <div class="brand">
+    <h1>Arrival failure early warning</h1>
+    <p>Prototype on a simulated Hyderabad road network. Hospitals are fictional.</p>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" aria-selected="true" data-tab="live">Live mission</button>
+    <button role="tab" aria-selected="false" data-tab="replay">Replay evaluation</button>
+    <button role="tab" aria-selected="false" data-tab="about">How it works</button>
+  </nav>
+  <div class="clock" id="clock" aria-label="Simulation clock">17:52:00</div>
+</header>
+
+<main>
+  <section id="tab-live" class="live">
+    <div class="mapcol">
+      <div class="mapwrap" id="mapwrap">
+        <svg id="map" role="img" aria-label="Road network map with live traffic, ambulance and hospitals"></svg>
+        <div class="tip" id="tip" hidden></div>
+        <div class="maphint" id="maphint">Click any road to add a jam</div>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:#3E9E68"></i>Moving</span>
+          <span><i style="background:#E3A01B"></i>Slow</span>
+          <span><i style="background:#DE6428"></i>Heavy</span>
+          <span><i style="background:#B8281F"></i>Jammed</span>
+          <span><i style="background:#16202A;height:8px"></i>Ambulance route</span>
+          <span><i style="background:repeating-linear-gradient(90deg,#5A3ECF 0 5px,transparent 5px 9px)"></i>Suggested change</span>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="group">
+          <button class="btn primary" id="btnScenario">Replay AMB-204 scenario</button>
+          <button class="btn" id="btnRandom">New random mission</button>
+        </div>
+        <div class="group">
+          <button class="btn" id="btnPlay">Pause</button>
+          <label class="glabel" for="speed">Speed</label>
+          <select id="speed">
+            <option value="10">10x</option>
+            <option value="30" selected>30x</option>
+            <option value="60">60x</option>
+            <option value="120">120x</option>
+          </select>
+          <label class="glabel" style="display:flex;align-items:center;gap:5px;margin-left:6px"><input type="checkbox" id="autoPause" checked> Pause for decisions</label>
+        </div>
+        <div class="group">
+          <span class="glabel">Clicking a road</span>
+          <div class="seg" role="radiogroup" aria-label="Road click action">
+            <button role="radio" aria-checked="true" data-mode="jam">adds a jam</button>
+            <button role="radio" aria-checked="false" data-mode="close">closes it</button>
+          </div>
+        </div>
+        <div class="group">
+          <button class="btn" id="btnRain" aria-pressed="false">Start heavy rain</button>
+          <button class="btn" id="btnSurge">Add ED surge at destination</button>
+          <button class="btn" id="btnFeed" aria-pressed="false">Cut destination's status feed</button>
+        </div>
+        <details class="settings">
+          <summary>Mission settings</summary>
+          <div class="setgrid">
+            <label>Patient type
+              <select id="setAcuity">
+                <option value="stroke">Stroke</option>
+                <option value="cardiac">Cardiac</option>
+                <option value="trauma">Trauma</option>
+                <option value="routine">Routine transfer</option>
+              </select>
+            </label>
+            <label>Target time to care <input type="number" id="setTarget" min="10" max="120" step="1" style="width:70px"> min</label>
+            <label>Tolerance <input type="range" id="setDelta" min="0" max="30" step="1"> <output id="outDelta">15%</output></label>
+            <label>Alert when risk reaches <input type="range" id="setTheta" min="50" max="95" step="5"> <output id="outTheta">80%</output></label>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="block" aria-live="polite">
+        <div class="missionline" id="missionLine"></div>
+        <div class="missionmeta" id="missionMeta"></div>
+        <div class="riskhead">
+          <div class="pct" id="pct">0%</div>
+          <div>
+            <div class="state" id="state">Stable</div>
+            <div class="statesub" id="stateSub"></div>
+          </div>
+        </div>
+        <dl class="nums">
+          <div><dt>Expected time to care</dt><dd id="ttc">0 min</dd><dd class="small" id="band"></dd></div>
+          <div><dt>Elapsed since pickup</dt><dd id="elapsed">0.0 min</dd></div>
+          <div><dt>Forecast confidence</dt><dd id="conf">0.00</dd><dd class="small" id="confNote"></dd></div>
+        </dl>
+        <div id="outcome"></div>
+      </div>
+
+      <div class="block" id="recBlock">
+        <h2>Recommended action</h2>
+        <div id="rec"></div>
+      </div>
+
+      <div class="block">
+        <h2>Risk over the trip</h2>
+        <svg id="chart" viewBox="0 0 390 196" role="img" aria-label="Chart of failure risk over elapsed minutes"></svg>
+        <p class="chartnote" id="chartNote"></p>
+      </div>
+
+      <div class="block">
+        <h2>What's adding time</h2>
+        <div id="why"></div>
+        <p class="small muted" style="margin:8px 0 0">Minutes that disappear when that one factor is removed from the forecast. Factors overlap, so they don't add up to the total.</p>
+      </div>
+
+      <div class="block">
+        <h2>Activity</h2>
+        <ol class="log" id="log"></ol>
+      </div>
     </aside>
-    <section class="center"><div class="alert"><div><div class="overline">EARLY WARNING · TARGET MISS PREDICTED</div><h1>AMB-204 may miss its stroke arrival target</h1><p>Intervene now to recover an estimated 16 minutes.</p></div><div class="risk-score"><strong>87%</strong><span>FAILURE RISK</span></div></div>
-      <div class="panel map"><div class="road major" style="left:5%;top:66%;width:97%;transform:rotate(-20deg)"></div><div class="road" style="left:8%;top:22%;width:82%;transform:rotate(36deg)"></div><div class="road" style="left:0;top:47%;width:88%;transform:rotate(-6deg)"></div><div class="road" style="left:32%;top:3%;width:65%;transform:rotate(77deg)"></div><div class="road" style="left:1%;top:85%;width:78%;transform:rotate(-49deg)"></div>
-        <div class="route red" style="left:24%;top:65%;width:55%;transform:rotate(-30deg)"></div><div class="route teal" style="left:24%;top:65%;width:48%;transform:rotate(-4deg)"></div><div class="vehicle" style="left:21%;top:60%">✚</div><div class="pin" style="left:75%;top:35%;background:var(--red)"><span>A</span></div><div class="pin" style="left:72%;top:61%;background:var(--teal)"><span>B</span></div><div class="maplabel" style="left:35%;top:25%;color:#ffadb5">Traffic slowdown · 23 km/h</div><div class="maplabel" style="left:74%;top:21%">Hospital A · 5 ambulances queued</div><div class="maplabel" style="left:66%;top:75%">Hospital B · stroke bay ready</div><div class="map-action">⌖ GPS updates every 8 sec</div><div class="legend"><span><i class="dot" style="background:var(--red)"></i>Current plan · 39 min</span><span><i class="dot" style="background:var(--teal)"></i>Recommended · 23 min</span></div></div>
-      <div class="panel telemetry"><div class="metric"><label>Target arrival</label><b>20 min</b><em>clinical threshold</em></div><div class="metric"><label>Current ETA</label><b>39 min</b><em>+19 min over target</em></div><div class="metric"><label>Traffic speed</label><b>23 km/h</b><em>↓ from 42 km/h</em></div><div class="metric"><label>Warning lead time</label><b>12 min</b><em>before target miss</em></div></div>
-      <div class="panel timeline"><div class="timeline-head"><h2>Mission timeline</h2><span class="pill critical">+8 MIN · CRITICAL</span></div><div class="stages"><div class="stage done">Dispatch<b>12% · stable</b></div><div class="stage done">+5 min<b>58% · at risk</b></div><div class="stage active">+8 min<b>87% · critical</b></div><div class="stage">Intervene<b>awaiting approval</b></div></div></div>
-    </section>
-    <aside class="panel"><div class="side-card"><h2>Why this mission is at risk</h2><div class="factor"><div class="factor-head"><span>ED congestion</span><b>42%</b></div><div class="bar"><i class="red" style="width:42%"></i></div></div><div class="factor"><div class="factor-head"><span>Downstream traffic</span><b>31%</b></div><div class="bar"><i style="width:31%"></i></div></div><div class="factor"><div class="factor-head"><span>Route bottleneck</span><b>17%</b></div><div class="bar"><i class="blue" style="width:17%"></i></div></div><div class="factor"><div class="factor-head"><span>Weather & other</span><b>10%</b></div><div class="bar"><i style="width:10%"></i></div></div></div>
-      <div class="side-card"><h2>Recommended intervention</h2><div class="hospital"><div class="hospital-top"><span>Hospital A · planned</span><span>39 min</span></div><small>Stroke capable · 5 ambulances queued</small><div class="time">27 min drive + 12 min handover</div></div><div class="hospital chosen" id="hospitalB"><div class="hospital-top"><span>Hospital B · recommended</span><span>23 min</span></div><small>Stroke capable · bay available</small><div class="time">21 min drive + 2 min handover · <span class="save">saves ≈16 min</span></div></div><div class="actions"><button class="primary" id="approve">Approve reroute + pre-alert</button><button class="secondary" id="details">Details</button></div></div>
-      <div class="side-card"><h2>Actions included</h2><div style="color:var(--muted);font-size:12px;line-height:1.8">✓ Send clinically eligible reroute to crew<br>✓ Pre-alert Hospital B stroke team<br>✓ Keep Hospital A on monitor<br>✓ Log decision for review</div><div class="actions"><button class="secondary" id="download" style="flex:1">↓ Download brief</button><button class="secondary" id="share" style="flex:1">↗ Share update</button></div></div>
-    </aside>
-  </main><div class="toast" id="toast">✓ Intervention approved — crew and Hospital B have been notified.</div><div class="modal-backdrop" id="shareModal"><div class="modal"><h2>Share mission update</h2><p>Create a handoff email for a friend or teammate. Nothing is sent until you send the draft from your email app.</p><label for="recipient">Recipient email</label><input id="recipient" type="email" placeholder="friend@example.com"><label for="shareMessage">Message</label><textarea id="shareMessage">FYI: AMB-204 is at 87% risk of missing its stroke target. We recommend rerouting to Hospital B, saving an estimated 16 minutes.</textarea><div class="modal-actions"><button class="secondary" id="cancelShare">Cancel</button><button class="primary" id="sendShare">Open email draft ↗</button></div></div></div>
-  <script>
-    const toast=document.getElementById('toast'), approve=document.getElementById('approve'), details=document.getElementById('details'), download=document.getElementById('download'), share=document.getElementById('share'), modal=document.getElementById('shareModal'), recipient=document.getElementById('recipient'), shareMessage=document.getElementById('shareMessage');
-    approve.addEventListener('click',()=>{approve.textContent='✓ Intervention approved';approve.classList.add('approved');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4200)});
-    details.addEventListener('click',()=>{document.querySelector('.side-card h2').scrollIntoView({behavior:'smooth'});toast.textContent='Recommendation considers route time, ED handover, and stroke eligibility.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500)});
-    download.addEventListener('click',()=>{const report=`PULSEROUTE — MISSION BRIEF\nGenerated: 15 Sep 2026, 10:42\n\nMission: AMB-204\nCase: Suspected stroke\nClinical target: 20 min\nPredicted failure risk: 87%\nCurrent plan: Hospital A — 39 min (27 min drive + 12 min handover)\nRecommended: Hospital B — 23 min (21 min drive + 2 min handover)\nEstimated time saved: 16 min\n\nPrimary risk drivers\n• ED congestion: 42%\n• Downstream traffic: 31%\n• Route bottleneck: 17%\n• Weather & other: 10%\n\nRecommended actions\n• Reroute to clinically eligible Hospital B\n• Pre-alert Hospital B stroke team\n• Monitor Hospital A queue\n\nNote: Demonstration data only. Human dispatcher approval is required.`;const blob=new Blob([report],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='AMB-204-mission-brief.txt';a.click();URL.revokeObjectURL(url);toast.textContent='↓ Mission brief downloaded.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)});
-    share.addEventListener('click',()=>{modal.classList.add('open');recipient.focus()});document.getElementById('cancelShare').addEventListener('click',()=>modal.classList.remove('open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});document.getElementById('sendShare').addEventListener('click',()=>{if(!recipient.value){recipient.focus();recipient.style.borderColor='var(--red)';return}const subject=encodeURIComponent('PulseRoute update: AMB-204');const body=encodeURIComponent(shareMessage.value+'\n\nPulseRoute EMS Safety Layer — demonstration prototype.');window.location.href=`mailto:${encodeURIComponent(recipient.value)}?subject=${subject}&body=${body}`;modal.classList.remove('open');toast.textContent='↗ Email draft opened — review and send it from your mail app.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000)});
-    document.querySelectorAll('.mission').forEach(m=>m.addEventListener('click',()=>{document.querySelector('.mission.selected').classList.remove('selected');m.classList.add('selected');toast.textContent=m.querySelector('.mission-top span').textContent+' selected — demo data stays focused on AMB-204.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)}));
-  </script>
-</body></html>
+  </section>
+
+  <section id="tab-replay" hidden>
+    <div class="page">
+      <h2>Would it have caught failures early?</h2>
+      <p class="lede">Each replay runs a simulated mission twice with identical traffic and events. The first run takes no action and records when the system would have raised its alert. The second run approves the recommended action at that alert, so you can see how many failures it would have prevented.</p>
+      <div class="runbar">
+        <label>Missions
+          <select id="repN"><option value="30">30</option><option value="60" selected>60</option><option value="100">100</option></select>
+        </label>
+        <label>Alert threshold <input type="range" id="repTheta" min="50" max="95" step="5" value="80"> <output id="repThetaOut">80%</output></label>
+        <button class="btn primary" id="btnReplay">Run replay</button>
+        <button class="btn" id="btnReshuffle">Use different missions</button>
+        <div class="progress" aria-hidden="true"><i id="repProg"></i></div>
+        <span class="muted small" id="repStatus">Mission set 1000</span>
+      </div>
+      <div id="repResults"><p class="muted" style="margin-top:20px">Run the replay to see detection, warning time and prevented failures.</p></div>
+      <div class="note"><b>Read these numbers carefully.</b> The predictor and the simulator share the same traffic assumptions, so these results show the pipeline works end to end, not how accurate it would be on real roads. The predictor does not see hidden incidents; it only sees speeds, their trend, and feeds. To get real numbers, replace the simulator with recorded 108 trips and GPS traces.</div>
+    </div>
+  </section>
+
+  <section id="tab-about" hidden>
+    <div class="page">
+      <h2>How the prototype works</h2>
+      <p class="lede">A safety layer that sits above routing. Every 10 simulated seconds it re-reads the live state, forecasts whether the mission will miss its limit, explains why, and checks whether any clinically eligible option prevents the miss.</p>
+      <ol class="steps">
+        <li><b>Observe.</b> Speed on every road segment and its trend over the last minute, known closures and rain from event feeds, and each hospital's ambulance queue with the age of that data. When a hospital feed stops, the queue is treated as unknown, not normal, and uncertainty widens.</li>
+        <li><b>Predict.</b> 200 possible futures are simulated for the remaining route. Each one projects congestion forward using the usual evening profile, rain, the current slowdown's trend, and spread from neighbouring roads, with random noise and the chance of a new incident. Time to care is drive time plus the expected ED handover wait. The share of futures that exceed the limit is the risk. In the full system, a trained GNN + LSTM replaces this forecaster.</li>
+        <li><b>Explain.</b> The expected trip is re-run with one factor removed at a time: the current slowdown, closures, rain, the ED queue, the route choice, and the usual rush-hour bottleneck. The minutes that disappear are that factor's contribution.</li>
+        <li><b>Find a fix.</b> Alternative routes to the same hospital and the best route to every hospital that can treat this patient type are scored on the same 200 futures, so the comparison is fair. Hospitals without the right unit are never suggested.</li>
+        <li><b>Recommend, don't act.</b> A change is suggested only if it saves at least 3 minutes and lowers the risk. The dispatcher approves or dismisses it. Dismissed suggestions stay quiet for 3 minutes unless risk climbs further.</li>
+      </ol>
+      <div class="note"><b>What is simulated:</b> the road network is a schematic of real Hyderabad localities with approximate distances; traffic, incidents and hospital queues come from a simulator; hospitals A to F are fictional. <b>What is real:</b> the prediction, attribution, eligibility and recommendation logic, and the replay evaluation method.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+// ============================================================================
+// Arrival Failure Early Warning: engine
+// World simulator (ground truth) + predictor + attribution + recommender.
+// The predictor never reads hidden incident sources; it only sees observed
+// road speeds, their recent trend, event feeds (closures, rain) and hospital
+// feeds. That gap between world and predictor is what makes the demo honest.
+// ============================================================================
+
+// ---------- Random numbers ----------
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gauss(rng) {
+  let u = rng();
+  if (u < 1e-12) u = 1e-12;
+  const v = rng();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function hashSeed(a, text) {
+  let h = (2166136261 ^ a) >>> 0;
+  const s = String(text);
+  for (let i = 0; i < s.length; i++) {
+    h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0;
+  }
+  return h;
+}
+function clamp(x, lo, hi) {
+  if (x < lo) return lo;
+  if (x > hi) return hi;
+  return x;
+}
+
+// ---------- Road network (schematic Hyderabad) ----------
+const LON0 = 78.335, LON1 = 78.575, LAT0 = 17.372, LAT1 = 17.508;
+const VIEW_W = 1000;
+const VIEW_H = Math.round((VIEW_W * (LAT1 - LAT0) * 111) / ((LON1 - LON0) * 106));
+
+const NODES = [
+  ["miyapur", "Miyapur", 17.4968, 78.357],
+  ["kukatpally", "Kukatpally", 17.4849, 78.395],
+  ["moosapet", "Moosapet", 17.47, 78.427],
+  ["balanagar", "Balanagar", 17.477, 78.448],
+  ["erragadda", "Erragadda", 17.457, 78.433],
+  ["kondapur", "Kondapur", 17.463, 78.362],
+  ["hitech", "Hitech City", 17.447, 78.379],
+  ["madhapur", "Madhapur", 17.438, 78.396],
+  ["gachibowli", "Gachibowli", 17.44, 78.348],
+  ["jubilee", "Jubilee Hills", 17.43, 78.412],
+  ["ameerpet", "Ameerpet", 17.4375, 78.4482],
+  ["begumpet", "Begumpet", 17.4447, 78.4664],
+  ["secunderabad", "Secunderabad", 17.4399, 78.4983],
+  ["punjagutta", "Punjagutta", 17.4265, 78.4507],
+  ["banjara", "Banjara Hills", 17.415, 78.435],
+  ["tolichowki", "Tolichowki", 17.399, 78.413],
+  ["mehdipatnam", "Mehdipatnam", 17.395, 78.44],
+  ["lakdikapul", "Lakdikapul", 17.404, 78.465],
+  ["koti", "Koti", 17.385, 78.486],
+  ["tarnaka", "Tarnaka", 17.427, 78.539],
+  ["uppal", "Uppal", 17.401, 78.559],
+].map(function (n, i) {
+  return {
+    idx: i, id: n[0], name: n[1], lat: n[2], lon: n[3],
+    x: ((n[3] - LON0) / (LON1 - LON0)) * VIEW_W,
+    y: ((LAT1 - n[2]) / (LAT1 - LAT0)) * VIEW_H,
+  };
+});
+const NODE_BY_ID = {};
+NODES.forEach(function (n) { NODE_BY_ID[n.id] = n.idx; });
+
+// [from, to, free-flow km/h, evening peak travel-time multiplier, rain sensitivity, road name]
+const EDGE_DEFS = [
+  ["miyapur", "kukatpally", 45, 1.35, 1.0, "NH 65"],
+  ["kukatpally", "moosapet", 45, 1.5, 1.2, "NH 65"],
+  ["moosapet", "erragadda", 40, 1.35, 1.3, "NH 65"],
+  ["erragadda", "ameerpet", 35, 1.4, 1.0, "Erragadda Road"],
+  ["moosapet", "balanagar", 40, 1.25, 1.0, "Balanagar Road"],
+  ["balanagar", "begumpet", 35, 1.3, 0.9, "Bowenpally Road"],
+  ["ameerpet", "begumpet", 40, 1.3, 1.0, "Greenlands Road"],
+  ["begumpet", "secunderabad", 35, 1.35, 1.0, "SP Road"],
+  ["miyapur", "kondapur", 40, 1.25, 0.9, "Kondapur Road"],
+  ["kondapur", "hitech", 35, 1.35, 1.0, "Kondapur Main Road"],
+  ["kukatpally", "hitech", 35, 1.45, 1.1, "JNTU Hitech Road"],
+  ["hitech", "madhapur", 30, 1.55, 1.2, "Hitech City Road"],
+  ["kondapur", "gachibowli", 40, 1.3, 0.9, "Botanical Garden Road"],
+  ["gachibowli", "madhapur", 40, 1.3, 0.8, "Biodiversity Road"],
+  ["gachibowli", "tolichowki", 50, 1.2, 0.8, "Old Mumbai Highway"],
+  ["madhapur", "jubilee", 35, 1.4, 1.1, "Road No. 36"],
+  ["jubilee", "ameerpet", 35, 1.35, 1.0, "Yousufguda Road"],
+  ["jubilee", "banjara", 35, 1.3, 0.9, "Road No. 1"],
+  ["banjara", "punjagutta", 35, 1.35, 1.0, "Road No. 1"],
+  ["punjagutta", "ameerpet", 30, 1.45, 1.3, "Ameerpet Road"],
+  ["punjagutta", "begumpet", 35, 1.3, 1.0, "Rajbhavan Road"],
+  ["punjagutta", "lakdikapul", 35, 1.35, 1.1, "Khairatabad Road"],
+  ["banjara", "mehdipatnam", 35, 1.3, 1.0, "Masab Tank Road"],
+  ["tolichowki", "mehdipatnam", 35, 1.35, 1.2, "Tolichowki Road"],
+  ["tolichowki", "jubilee", 35, 1.3, 1.0, "Film Nagar Road"],
+  ["mehdipatnam", "lakdikapul", 60, 1.15, 0.5, "PVNR Expressway"],
+  ["lakdikapul", "koti", 30, 1.4, 1.3, "Abids Road"],
+  ["lakdikapul", "secunderabad", 35, 1.35, 1.0, "Tank Bund Road"],
+  ["secunderabad", "tarnaka", 40, 1.3, 1.0, "Tarnaka Road"],
+  ["tarnaka", "uppal", 45, 1.25, 1.1, "Uppal Road"],
+  ["koti", "uppal", 35, 1.3, 1.2, "Amberpet Road"],
+];
+const EDGES = EDGE_DEFS.map(function (d, i) {
+  const a = NODES[NODE_BY_ID[d[0]]];
+  const b = NODES[NODE_BY_ID[d[1]]];
+  const dx = (a.lon - b.lon) * 106;
+  const dy = (a.lat - b.lat) * 111;
+  const len = Math.sqrt(dx * dx + dy * dy) * 1.3;
+  return {
+    idx: i, a: a.idx, b: b.idx, ff: d[2], peak: d[3], drain: d[4], road: d[5],
+    len: len, label: a.name + " to " + b.name,
+  };
+});
+const E_COUNT = EDGES.length;
+const ADJ = NODES.map(function () { return []; });
+const EDGE_KEY = {};
+EDGES.forEach(function (e) {
+  ADJ[e.a].push({ to: e.b, edge: e.idx });
+  ADJ[e.b].push({ to: e.a, edge: e.idx });
+  EDGE_KEY[e.a + "|" + e.b] = e.idx;
+  EDGE_KEY[e.b + "|" + e.a] = e.idx;
+});
+const NEIGH = EDGES.map(function (e) {
+  const out = [];
+  EDGES.forEach(function (o) {
+    if (o.idx === e.idx) return;
+    if (o.a === e.a || o.a === e.b || o.b === e.a || o.b === e.b) out.push(o.idx);
+  });
+  return out;
+});
+function edgeId(a, b) { return EDGE_KEY[a + "|" + b]; }
+
+// ---------- Hospitals (fictional) and mission types ----------
+const HOSPITALS = [
+  { id: "A", name: "Hospital A", node: NODE_BY_ID.ameerpet, caps: ["stroke", "cardiac", "trauma"], baseQ: 1 },
+  { id: "B", name: "Hospital B", node: NODE_BY_ID.jubilee, caps: ["stroke", "cardiac"], baseQ: 0 },
+  { id: "C", name: "Hospital C", node: NODE_BY_ID.kukatpally, caps: ["cardiac", "trauma"], baseQ: 1 },
+  { id: "D", name: "Hospital D", node: NODE_BY_ID.secunderabad, caps: ["stroke", "cardiac", "trauma"], baseQ: 2 },
+  { id: "E", name: "Hospital E", node: NODE_BY_ID.gachibowli, caps: ["stroke", "trauma"], baseQ: 1 },
+  { id: "F", name: "Hospital F", node: NODE_BY_ID.koti, caps: ["cardiac", "trauma"], baseQ: 2 },
+];
+const HOSP_BY_ID = {};
+HOSPITALS.forEach(function (h) { HOSP_BY_ID[h.id] = h; });
+
+const ACUITY = {
+  stroke: { label: "Stroke", target: 30, needs: "stroke", unit: "stroke unit" },
+  cardiac: { label: "Cardiac", target: 30, needs: "cardiac", unit: "cardiac cath lab" },
+  trauma: { label: "Trauma", target: 35, needs: "trauma", unit: "trauma centre" },
+  routine: { label: "Routine transfer", target: 60, needs: null, unit: "" },
+};
+
+const ED_BASE_MIN = 4;
+const ED_PER_AMB_MIN = 3.5;
+const ED_DRAIN_SEC = 600;
+
+// ---------- Traffic physics ----------
+const PEAK_CENTER = 18.75 * 3600;
+const PEAK_SIGMA = 3300;
+function histMult(e, clock, noBottleneck) {
+  if (noBottleneck) return 1;
+  const z = (clock - PEAK_CENTER) / PEAK_SIGMA;
+  return 1 + (EDGES[e].peak - 1) * Math.exp(-0.5 * z * z);
+}
+function histCong(e, clock, noBottleneck) {
+  const m = histMult(e, clock, noBottleneck);
+  return clamp((1 - 1 / m) / 0.8, 0, 0.9);
+}
+function weatherAdd(e, rain) {
+  return Math.min(0.35, (rain / 25) * 0.25 * EDGES[e].drain);
+}
+function weatherFactor(rain) {
+  return 1 - Math.min(0.2, (rain / 25) * 0.15);
+}
+// km/h for an ambulance with siren on a segment with congestion c
+function ambSpeed(e, c, rain) {
+  return EDGES[e].ff * Math.max(0.12, 1 - 0.8 * c) * weatherFactor(rain) * 1.15;
+}
+function trafficSpeed(e, c, rain) {
+  return EDGES[e].ff * Math.max(0.1, 1 - 0.8 * c) * weatherFactor(rain);
+}
+
+// ---------- Graph search ----------
+function dijkstra(src, dst, weightFn, avoid) {
+  const n = NODES.length;
+  const dist = new Array(n).fill(Infinity);
+  const prev = new Array(n).fill(-1);
+  const done = new Array(n).fill(false);
+  dist[src] = 0;
+  for (let iter = 0; iter < n; iter++) {
+    let u = -1;
+    let best = Infinity;
+    for (let i = 0; i < n; i++) {
+      if (!done[i] && dist[i] < best) { best = dist[i]; u = i; }
+    }
+    if (u === -1) break;
+    if (u === dst) break;
+    done[u] = true;
+    for (const link of ADJ[u]) {
+      if (avoid && avoid.has(link.edge)) continue;
+      const nd = dist[u] + weightFn(link.edge);
+      if (nd < dist[link.to]) { dist[link.to] = nd; prev[link.to] = u; }
+    }
+  }
+  if (dist[dst] === Infinity) return null;
+  const path = [dst];
+  let cur = dst;
+  while (cur !== src) { cur = prev[cur]; path.push(cur); }
+  path.reverse();
+  return path;
+}
+function kPaths(src, dst, weightFn, avoid, k) {
+  const penalty = new Map();
+  const seen = new Set();
+  const out = [];
+  for (let i = 0; i < k + 2 && out.length < k; i++) {
+    const p = dijkstra(src, dst, function (e) {
+      const f = penalty.has(e) ? penalty.get(e) : 1;
+      return weightFn(e) * f;
+    }, avoid);
+    if (!p) break;
+    const key = p.join(",");
+    if (!seen.has(key)) { seen.add(key); out.push(p); }
+    for (let j = 0; j + 1 < p.length; j++) {
+      const e = edgeId(p[j], p[j + 1]);
+      const f = penalty.has(e) ? penalty.get(e) : 1;
+      penalty.set(e, f * 1.8);
+    }
+  }
+  return out;
+}
+function pathEdges(nodes) {
+  const out = [];
+  for (let i = 0; i + 1 < nodes.length; i++) out.push(edgeId(nodes[i], nodes[i + 1]));
+  return out;
+}
+
+// ---------- World (ground truth) ----------
+function createWorld(spec) {
+  const m = spec.mission;
+  const w = {
+    rng: mulberry32(hashSeed(m.seed, "world")),
+    seed: m.seed,
+    clock: m.startClock,
+    elapsed: 0,
+    rain: 0,
+    c: new Float64Array(E_COUNT),
+    snapshots: [],
+    lastSnap: -1e9,
+    incidents: [],
+    closed: new Map(),
+    hospitals: {},
+    events: spec.events.map(function (e) { return Object.assign({ done: false }, e); }),
+  };
+  for (let e = 0; e < E_COUNT; e++) w.c[e] = histCong(e, w.clock, false);
+  HOSPITALS.forEach(function (h) {
+    let q = h.baseQ;
+    if (m.baseQ && m.baseQ[h.id] !== undefined) q = m.baseQ[h.id];
+    w.hospitals[h.id] = { q: q, baseQ: q, feedUp: true, lastQ: q, lastUpdate: w.clock, drainAcc: 0, diversion: false };
+  });
+  return w;
+}
+
+function incidentLevel(inc, t) {
+  const d = t - inc.start;
+  if (d < 0) return 0;
+  if (d < inc.ramp) return (inc.peak * d) / inc.ramp;
+  if (d < inc.duration) return inc.peak;
+  return 0;
+}
+
+// Returns a plain-language description of what changed.
+function applyEvent(w, ev) {
+  if (ev.type === "accident") {
+    w.incidents.push({ edge: ev.edge, start: w.elapsed, peak: ev.peak, ramp: 150, duration: ev.duration });
+    return "Slowdown starting on " + EDGES[ev.edge].label;
+  }
+  if (ev.type === "closure") {
+    let end = Infinity;
+    if (ev.duration) end = w.elapsed + ev.duration;
+    w.closed.set(ev.edge, end);
+    return "Road closed: " + EDGES[ev.edge].label;
+  }
+  if (ev.type === "reopen") {
+    w.closed.delete(ev.edge);
+    return "Road reopened: " + EDGES[ev.edge].label;
+  }
+  if (ev.type === "rain") {
+    w.rain = ev.mm;
+    if (ev.mm > 0) return "Rain now " + ev.mm + " mm/h";
+    return "Rain has stopped";
+  }
+  if (ev.type === "surge") {
+    const h = w.hospitals[ev.hospital];
+    h.q += ev.add;
+    h.drainAcc = 0;
+    return HOSP_BY_ID[ev.hospital].name + " ED: " + h.q + " ambulances now waiting";
+  }
+  if (ev.type === "feedDown") {
+    w.hospitals[ev.hospital].feedUp = false;
+    return HOSP_BY_ID[ev.hospital].name + " status feed stopped updating";
+  }
+  if (ev.type === "feedUp") {
+    w.hospitals[ev.hospital].feedUp = true;
+    return HOSP_BY_ID[ev.hospital].name + " status feed restored";
+  }
+  return "";
+}
+
+function applyDueEvents(w, onLog) {
+  for (const ev of w.events) {
+    if (!ev.done && w.elapsed >= ev.at) {
+      ev.done = true;
+      const msg = applyEvent(w, ev);
+      if (onLog && msg) onLog(msg, "world");
+    }
+  }
+}
+
+function stepWorld(w, dt) {
+  const prev = Float64Array.from(w.c);
+  for (let e = 0; e < E_COUNT; e++) {
+    const h = histCong(e, w.clock, false);
+    const wa = weatherAdd(e, w.rain);
+    let spill = 0;
+    for (const n of NEIGH[e]) {
+      if (prev[n] - 0.45 > spill) spill = prev[n] - 0.45;
+    }
+    spill = spill * 0.55;
+    let src = 0;
+    for (const inc of w.incidents) {
+      if (inc.edge === e) src = Math.max(src, incidentLevel(inc, w.elapsed));
+    }
+    const target = clamp(h + wa + src + spill, 0, 0.95);
+    let tau = 420;
+    if (target > prev[e]) tau = 140;
+    let c = prev[e] + (target - prev[e]) * (1 - Math.exp(-dt / tau));
+    c += (w.rng() - 0.5) * 0.012 * Math.sqrt(dt / 5);
+    w.c[e] = clamp(c, 0, 0.95);
+  }
+  w.clock += dt;
+  w.elapsed += dt;
+  for (const id in w.hospitals) {
+    const h = w.hospitals[id];
+    if (h.q > h.baseQ) {
+      h.drainAcc += dt;
+      if (h.drainAcc >= ED_DRAIN_SEC) { h.q -= 1; h.drainAcc = 0; }
+    }
+    if (h.feedUp) { h.lastQ = h.q; h.lastUpdate = w.clock; }
+  }
+  for (const [e, end] of Array.from(w.closed.entries())) {
+    if (w.elapsed >= end) w.closed.delete(e);
+  }
+  if (w.clock - w.lastSnap >= 20) {
+    w.snapshots.push({ clock: w.clock, c: Float64Array.from(w.c) });
+    w.lastSnap = w.clock;
+    if (w.snapshots.length > 4) w.snapshots.shift();
+  }
+}
+
+function closedSet(w) { return new Set(w.closed.keys()); }
+
+// ---------- Ambulance ----------
+function createAmbulance(w, mission) {
+  const dest = HOSP_BY_ID[mission.hospital].node;
+  const avoid = closedSet(w);
+  const path = dijkstra(mission.pickup, dest, function (e) {
+    return (EDGES[e].len / ambSpeed(e, w.c[e], w.rain)) * 3600;
+  }, avoid);
+  return { path: path, i: 0, pos: 0, phase: "enroute", arriveElapsed: null, waitMin: null, ttc: null, detours: 0 };
+}
+
+function edWaitTruth(w, mission, hid) {
+  const r = mulberry32(hashSeed(mission.seed, "ed" + hid));
+  const z = gauss(r);
+  const noise = Math.exp(0.25 * z - 0.03);
+  return ED_BASE_MIN + w.hospitals[hid].q * ED_PER_AMB_MIN * noise;
+}
+
+function moveAmbulance(w, amb, mission, dt, onLog) {
+  if (amb.phase === "handover") {
+    if (w.elapsed + dt >= amb.arriveElapsed + amb.waitMin * 60) {
+      amb.phase = "incare";
+      amb.ttc = (amb.arriveElapsed + amb.waitMin * 60) / 60;
+      if (onLog) onLog("Patient handed over to " + HOSP_BY_ID[mission.hospital].name + " ED", "world");
+    }
+    return;
+  }
+  if (amb.phase !== "enroute") return;
+  let rem = dt;
+  let guard = 0;
+  while (rem > 1e-9 && amb.phase === "enroute" && guard < 50) {
+    guard++;
+    const a = amb.path[amb.i];
+    const b = amb.path[amb.i + 1];
+    const e = edgeId(a, b);
+    if (amb.pos < 1e-9 && w.closed.has(e)) {
+      const dest = amb.path[amb.path.length - 1];
+      const detour = dijkstra(a, dest, function (x) {
+        return (EDGES[x].len / ambSpeed(x, w.c[x], w.rain)) * 3600;
+      }, closedSet(w));
+      if (!detour) return;
+      amb.path = amb.path.slice(0, amb.i).concat(detour);
+      amb.detours += 1;
+      if (onLog) onLog("Crew found " + EDGES[e].label + " closed and took a detour", "world");
+      continue;
+    }
+    const v = ambSpeed(e, w.c[e], w.rain) / 3600;
+    const left = EDGES[e].len - amb.pos;
+    if (v * rem >= left) {
+      rem -= left / v;
+      amb.i += 1;
+      amb.pos = 0;
+      if (amb.i === amb.path.length - 1) {
+        amb.phase = "handover";
+        amb.arriveElapsed = w.elapsed + (dt - rem);
+        amb.waitMin = edWaitTruth(w, mission, mission.hospital);
+        if (onLog) onLog("Arrived at " + HOSP_BY_ID[mission.hospital].name + ", waiting for handover", "world");
+      }
+    } else {
+      amb.pos += v * rem;
+      rem = 0;
+    }
+  }
+}
+
+function ambulancePoint(amb) {
+  if (amb.phase !== "enroute") {
+    const n = NODES[amb.path[amb.path.length - 1]];
+    return { x: n.x, y: n.y };
+  }
+  const a = NODES[amb.path[amb.i]];
+  const b = NODES[amb.path[amb.i + 1]];
+  const e = edgeId(a.idx, b.idx);
+  const f = amb.pos / EDGES[e].len;
+  return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
+}
+
+// ---------- Predictor ----------
+function observe(w) {
+  const trend = new Float64Array(E_COUNT);
+  if (w.snapshots.length > 0) {
+    const ref = w.snapshots[0];
+    const span = w.clock - ref.clock;
+    if (span >= 20) {
+      for (let e = 0; e < E_COUNT; e++) trend[e] = (w.c[e] - ref.c[e]) / span;
+    }
+  }
+  const hospitals = {};
+  for (const id in w.hospitals) {
+    const h = w.hospitals[id];
+    if (h.feedUp) {
+      hospitals[id] = { q: h.q, baseQ: h.baseQ, known: true, age: 0 };
+    } else {
+      hospitals[id] = { q: h.lastQ, baseQ: h.baseQ, known: false, age: w.clock - h.lastUpdate };
+    }
+  }
+  return { clock: w.clock, elapsed: w.elapsed, c: Float64Array.from(w.c), trend: trend, rain: w.rain, closed: closedSet(w), hospitals: hospitals };
+}
+
+function forecastC(obs, e, tau, s, cf) {
+  const hNow = histCong(e, obs.clock, false);
+  const waTrue = weatherAdd(e, obs.rain);
+  const cNow = obs.c[e];
+  let anomaly = cNow - hNow - waTrue;
+  const tr = obs.trend[e];
+  let growth = 0;
+  if (tr > 0) growth = tr * Math.min(tau, 300) * 0.5;
+  let maxNow = 0;
+  let maxFut = 0;
+  for (const n of NEIGH[e]) {
+    const cn = obs.c[n];
+    let fut = cn;
+    if (obs.trend[n] > 0) fut = Math.min(0.95, cn + obs.trend[n] * Math.min(tau, 300) * 0.5);
+    if (cn > maxNow) maxNow = cn;
+    if (fut > maxFut) maxFut = fut;
+  }
+  const spillNow = 0.55 * Math.max(0, maxNow - 0.45);
+  const spillFut = 0.55 * Math.max(0, maxFut - 0.45);
+  let addSpill = Math.max(0, spillFut - spillNow) * (1 - Math.exp(-tau / 200));
+  if (cf.noAnomaly) { anomaly = 0; growth = 0; addSpill = 0; }
+  let decay = 1;
+  if (tr <= 0.0002) decay = Math.exp(-tau / 2400);
+  const h = histCong(e, obs.clock + tau, !!cf.noBottleneck);
+  let wa = weatherAdd(e, obs.rain);
+  if (cf.noRain) wa = 0;
+  let c = h + wa + Math.max(-0.2, anomaly) * decay + growth + addSpill;
+  if (s) {
+    c += s.shift + s.noise[e] * (0.035 + 0.07 * Math.min(1, tau / 1500));
+    if (s.inc[e] > 0) c += s.inc[e] * Math.min(1, tau / 600);
+  }
+  return clamp(c, 0, 0.95);
+}
+
+function makeSamples(rng, n) {
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const noise = new Float32Array(E_COUNT);
+    const inc = new Float32Array(E_COUNT);
+    for (let e = 0; e < E_COUNT; e++) {
+      noise[e] = gauss(rng);
+      if (rng() < 0.006 * EDGES[e].len) inc[e] = 0.2 + rng() * 0.3;
+    }
+    const edz = {};
+    const edq = {};
+    HOSPITALS.forEach(function (h) { edz[h.id] = gauss(rng); edq[h.id] = gauss(rng); });
+    out.push({ shift: gauss(rng) * 0.03, noise: noise, inc: inc, edz: edz, edq: edq });
+  }
+  return out;
+}
+
+function forecastWeightFn(obs) {
+  return function (e) {
+    return (EDGES[e].len / ambSpeed(e, forecastC(obs, e, 240, null, {}), obs.rain)) * 3600;
+  };
+}
+
+// Where rerouting can start from: the current node if the ambulance is exactly at it, otherwise the end of the current segment.
+function anchorOf(amb) {
+  if (amb.pos < 1e-6) return { idx: amb.i, node: amb.path[amb.i], prefix: [] };
+  const e = edgeId(amb.path[amb.i], amb.path[amb.i + 1]);
+  return { idx: amb.i + 1, node: amb.path[amb.i + 1], prefix: [{ e: e, km: EDGES[e].len - amb.pos }] };
+}
+
+// Turns a node list into timed segments, detouring at the node before any known closure.
+function buildPlan(obs, nodes, prefix, ignoreClosures) {
+  let list = nodes.slice();
+  if (!ignoreClosures) {
+    for (let k = 0; k + 1 < list.length; k++) {
+      const e = edgeId(list[k], list[k + 1]);
+      if (obs.closed.has(e)) {
+        const det = dijkstra(list[k], list[list.length - 1], forecastWeightFn(obs), obs.closed);
+        if (!det) return null;
+        list = list.slice(0, k).concat(det);
+        break;
+      }
+    }
+  }
+  const segs = prefix.slice();
+  for (let k = 0; k + 1 < list.length; k++) {
+    const e = edgeId(list[k], list[k + 1]);
+    segs.push({ e: e, km: EDGES[e].len });
+  }
+  return { nodes: list, segs: segs };
+}
+
+function routeSeconds(obs, segs, s, cf) {
+  let t = 0;
+  let rain = obs.rain;
+  if (cf.noRain) rain = 0;
+  for (const g of segs) {
+    const c = forecastC(obs, g.e, t, s, cf);
+    t += (g.km / ambSpeed(g.e, c, rain)) * 3600;
+  }
+  return t;
+}
+
+function edWaitForecast(obs, hid, driveMin, s, cf) {
+  const h = obs.hospitals[hid];
+  let q;
+  let sig;
+  if (cf.normalED) {
+    q = h.baseQ;
+    sig = 0.25;
+  } else if (h.known) {
+    q = Math.max(h.baseQ, h.q - driveMin / (ED_DRAIN_SEC / 60));
+    sig = 0.25;
+    if (s) q += s.edq[hid] * 0.8;
+  } else {
+    const lastKnown = Math.max(h.baseQ, h.q - (h.age + driveMin * 60) / ED_DRAIN_SEC);
+    q = lastKnown;
+    sig = 0.6;
+    if (s) q += s.edq[hid] * 2;
+  }
+  q = Math.max(0, q);
+  let noise = 1;
+  if (s) noise = Math.exp(sig * s.edz[hid] - (sig * sig) / 2);
+  return ED_BASE_MIN + q * ED_PER_AMB_MIN * noise;
+}
+
+function timeToCare(obs, amb, plan, hid, s, cf) {
+  if (amb.phase === "incare") return amb.ttc;
+  if (amb.phase === "handover") {
+    const waited = (obs.elapsed - amb.arriveElapsed) / 60;
+    const wait = Math.max(edWaitForecast(obs, hid, 0, s, cf), waited + 0.3);
+    return amb.arriveElapsed / 60 + wait;
+  }
+  const drive = routeSeconds(obs, plan.segs, s, cf) / 60;
+  return obs.elapsed / 60 + drive + edWaitForecast(obs, hid, drive, s, cf);
+}
+
+function summarize(values, limit) {
+  const v = Array.from(values).sort(function (a, b) { return a - b; });
+  let fail = 0;
+  let sum = 0;
+  for (const x of v) { sum += x; if (x > limit) fail++; }
+  const q = function (p) { return v[Math.min(v.length - 1, Math.floor(p * v.length))]; };
+  return { pFail: fail / v.length, mean: sum / v.length, p10: q(0.1), p50: q(0.5), p90: q(0.9) };
+}
+
+function limitOf(mission) { return mission.targetMin * (1 + mission.delta); }
+
+function currentPlan(obs, amb) {
+  const anchor = anchorOf(amb);
+  return buildPlan(obs, amb.path.slice(anchor.idx), anchor.prefix, false);
+}
+
+function predict(obs, amb, mission, samples) {
+  const limit = limitOf(mission);
+  let plan = null;
+  if (amb.phase === "enroute") plan = currentPlan(obs, amb);
+  const vals = samples.map(function (s) { return timeToCare(obs, amb, plan, mission.hospital, s, {}); });
+  const st = summarize(vals, limit);
+  let stale = 0;
+  if (!obs.hospitals[mission.hospital].known) stale = 0.15;
+  st.confidence = clamp(1 - (st.p90 - st.p10) / limit - stale, 0.3, 0.97);
+  st.limit = limit;
+  st.plan = plan;
+  st.feedKnown = obs.hospitals[mission.hospital].known;
+  return st;
+}
+
+function eligibility(h, mission, obs) {
+  const need = ACUITY[mission.acuity].needs;
+  if (need && h.caps.indexOf(need) === -1) return { ok: false, reason: "no " + ACUITY[mission.acuity].unit };
+  return { ok: true, reason: "" };
+}
+
+function describeVia(nodes, avoidNodes) {
+  for (let i = 1; i < nodes.length - 1; i++) {
+    if (!avoidNodes.has(nodes[i])) return NODES[nodes[i]].name;
+  }
+  if (nodes.length > 2) return NODES[nodes[1]].name;
+  return "";
+}
+
+function recommend(obs, amb, mission, samples) {
+  if (amb.phase !== "enroute") return null;
+  const limit = limitOf(mission);
+  const anchor = anchorOf(amb);
+  const wf = forecastWeightFn(obs);
+  const stayPlan = buildPlan(obs, amb.path.slice(anchor.idx), anchor.prefix, false);
+  const options = [];
+  const evalOpt = function (opt) {
+    const vals = samples.map(function (s) { return timeToCare(obs, amb, opt.plan, opt.hid, s, {}); });
+    Object.assign(opt, summarize(vals, limit));
+    opt.detTTC = timeToCare(obs, amb, opt.plan, opt.hid, null, {});
+    options.push(opt);
+  };
+  evalOpt({ kind: "stay", hid: mission.hospital, plan: stayPlan, label: "Keep current plan" });
+  const stayNodes = new Set(stayPlan.nodes);
+  const destNode = HOSP_BY_ID[mission.hospital].node;
+  const stayKey = stayPlan.nodes.join(",");
+  for (const p of kPaths(anchor.node, destNode, wf, obs.closed, 3)) {
+    if (p.join(",") === stayKey) continue;
+    const via = describeVia(p, stayNodes);
+    evalOpt({ kind: "route", hid: mission.hospital, plan: buildPlan(obs, p, anchor.prefix, true), label: "Same hospital, via " + via });
+  }
+  const ineligible = [];
+  HOSPITALS.forEach(function (h) {
+    if (h.id === mission.hospital) return;
+    const el = eligibility(h, mission, obs);
+    if (!el.ok) { ineligible.push({ hid: h.id, reason: el.reason }); return; }
+    const p = dijkstra(anchor.node, h.node, wf, obs.closed);
+    if (!p) return;
+    let via = "";
+    if (p.length > 2) via = ", via " + NODES[p[Math.floor(p.length / 2)]].name;
+    evalOpt({ kind: "hospital", hid: h.id, plan: buildPlan(obs, p, anchor.prefix, true), label: "Switch to " + h.name + via });
+  });
+  const score = function (o) { return o.mean + 6 * o.pFail + 0.15 * (o.p90 - o.p10); };
+  const stay = options[0];
+  let best = null;
+  for (let i = 1; i < options.length; i++) {
+    if (best === null || score(options[i]) < score(best)) best = options[i];
+  }
+  let recommended = null;
+  if (best && stay.mean - best.mean >= 3 && best.pFail <= stay.pFail - 0.05) recommended = best;
+  const sorted = options.slice().sort(function (a, b) { return a.mean - b.mean; });
+  return { stay: stay, best: best, recommended: recommended, options: sorted, ineligible: ineligible, anchor: anchor };
+}
+
+// Counterfactual attribution: minutes each factor adds to the expected time to care.
+function attribute(obs, amb, mission) {
+  const result = { traffic: 0, closure: 0, hospital: 0, routing: 0, weather: 0, bottleneck: 0, base: 0 };
+  const hid = mission.hospital;
+  if (amb.phase === "incare") return result;
+  if (amb.phase === "handover") {
+    const base = timeToCare(obs, amb, null, hid, null, {});
+    result.base = base;
+    result.hospital = Math.max(0, base - timeToCare(obs, amb, null, hid, null, { normalED: true }));
+    return result;
+  }
+  const anchor = anchorOf(amb);
+  const plan = buildPlan(obs, amb.path.slice(anchor.idx), anchor.prefix, false);
+  const base = timeToCare(obs, amb, plan, hid, null, {});
+  result.base = base;
+  const d = function (cf, p) { return Math.max(0, base - timeToCare(obs, amb, p || plan, hid, null, cf)); };
+  result.traffic = d({ noAnomaly: true });
+  result.weather = d({ noRain: true });
+  result.hospital = d({ normalED: true });
+  result.bottleneck = d({ noBottleneck: true });
+  const noClosurePlan = buildPlan(obs, amb.path.slice(anchor.idx), anchor.prefix, true);
+  let hitsClosure = false;
+  for (const g of noClosurePlan.segs) { if (obs.closed.has(g.e)) hitsClosure = true; }
+  if (hitsClosure) {
+    const obsOpen = Object.assign({}, obs, { closed: new Set() });
+    result.closure = Math.max(0, base - timeToCare(obsOpen, amb, noClosurePlan, hid, null, {}));
+  }
+  let bestRoute = base;
+  for (const p of kPaths(anchor.node, HOSP_BY_ID[hid].node, forecastWeightFn(obs), obs.closed, 3)) {
+    const t = timeToCare(obs, amb, buildPlan(obs, p, anchor.prefix, true), hid, null, {});
+    if (t < bestRoute) bestRoute = t;
+  }
+  result.routing = Math.max(0, base - bestRoute);
+  return result;
+}
+
+function applyOption(amb, mission, opt) {
+  const anchor = anchorOf(amb);
+  amb.path = amb.path.slice(0, anchor.idx).concat(opt.plan.nodes);
+  mission.hospital = opt.hid;
+}
+
+// ---------- Missions ----------
+function scenarioAMB204() {
+  const mission = {
+    id: "AMB-204", seed: 204, acuity: "stroke", pickup: NODE_BY_ID.miyapur, hospital: "A",
+    targetMin: 35, delta: 0.15, theta: 0.8, startClock: 17 * 3600 + 52 * 60,
+  };
+  const events = [
+    { at: 150, type: "accident", edge: edgeId(NODE_BY_ID.moosapet, NODE_BY_ID.erragadda), peak: 0.5, duration: 2400 },
+    { at: 420, type: "surge", hospital: "A", add: 5 },
+  ];
+  return { mission: mission, events: events, title: "AMB-204: stroke patient from Miyapur" };
+}
+
+function generateMission(seed) {
+  const r = mulberry32(hashSeed(seed, "mission"));
+  const acuityRoll = r();
+  let acuity = "routine";
+  if (acuityRoll < 0.35) acuity = "stroke";
+  else if (acuityRoll < 0.65) acuity = "cardiac";
+  else if (acuityRoll < 0.85) acuity = "trauma";
+  const startClock = 17 * 3600 + Math.floor(r() * 3 * 3600);
+  const baseQ = {};
+  HOSPITALS.forEach(function (h) { baseQ[h.id] = Math.floor(r() * 3); });
+  let pickup = 0;
+  let hospital = null;
+  let path = null;
+  let driveSec = 0;
+  for (let attempt = 0; attempt < 20; attempt++) {
+    pickup = Math.floor(r() * NODES.length);
+    const probe = createWorld({ mission: { seed: seed, startClock: startClock, baseQ: baseQ }, events: [] });
+    let best = null;
+    HOSPITALS.forEach(function (h) {
+      const need = ACUITY[acuity].needs;
+      if (need && h.caps.indexOf(need) === -1) return;
+      if (h.node === pickup) return;
+      const wfn = function (e) { return (EDGES[e].len / ambSpeed(e, probe.c[e], 0)) * 3600; };
+      const p = dijkstra(pickup, h.node, wfn, null);
+      if (!p) return;
+      let t = 0;
+      for (const e of pathEdges(p)) t += wfn(e);
+      if (best === null || t < best.t) best = { h: h, p: p, t: t };
+    });
+    if (best && best.t > 360) { hospital = best.h.id; path = best.p; driveSec = best.t; break; }
+  }
+  const expected = driveSec / 60 + ED_BASE_MIN + baseQ[hospital] * ED_PER_AMB_MIN;
+  const targetMin = Math.max(ACUITY[acuity].target, 5 * Math.ceil((expected * (1.05 + r() * 0.15)) / 5));
+  const edges = pathEdges(path);
+  const events = [];
+  if (r() < 0.55) {
+    events.push({ at: 60 + r() * Math.max(60, 0.6 * driveSec - 60), type: "accident", edge: edges[Math.floor(r() * edges.length)], peak: 0.6 + r() * 0.25, duration: 900 + r() * 1500 });
+  }
+  if (r() < 0.35) {
+    events.push({ at: r() * 0.7 * driveSec, type: "surge", hospital: hospital, add: 3 + Math.floor(r() * 4) });
+  }
+  if (r() < 0.3) {
+    events.push({ at: r() * 0.5 * driveSec, type: "rain", mm: Math.round(6 + r() * 24) });
+  }
+  if (r() < 0.12 && edges.length > 1) {
+    events.push({ at: 60 + r() * 0.4 * driveSec, type: "closure", edge: edges[1 + Math.floor(r() * (edges.length - 1))], duration: 1800 });
+  }
+  if (r() < 0.1) {
+    events.push({ at: r() * 0.5 * driveSec, type: "feedDown", hospital: hospital });
+  }
+  events.sort(function (a, b) { return a.at - b.at; });
+  const id = "AMB-" + String(500 + (seed % 400));
+  const mission = { id: id, seed: seed, acuity: acuity, pickup: pickup, hospital: hospital, targetMin: targetMin, delta: 0.15, theta: 0.8, startClock: startClock, baseQ: baseQ };
+  return { mission: mission, events: events, title: id + ": " + ACUITY[acuity].label.toLowerCase() + " patient from " + NODES[pickup].name };
+}
+
+// ---------- Headless replay ----------
+function runHeadless(spec, theta, policy, stepSec) {
+  const mission = Object.assign({}, spec.mission);
+  const w = createWorld({ mission: mission, events: spec.events });
+  const amb = createAmbulance(w, mission);
+  const predRng = mulberry32(hashSeed(mission.seed, "pred"));
+  let dt = 5;
+  if (stepSec) dt = stepSec;
+  let nextPred = 0;
+  const hist = [];
+  let firstAlert = null;
+  let interventions = 0;
+  let lastAct = -1e9;
+  const actions = [];
+  while (amb.phase !== "incare" && w.elapsed < 150 * 60) {
+    applyDueEvents(w, null);
+    if (w.elapsed >= nextPred) {
+      const obs = observe(w);
+      const samples = makeSamples(predRng, 120);
+      const pr = predict(obs, amb, mission, samples);
+      hist.push([w.elapsed / 60, pr.pFail]);
+      if (firstAlert === null && pr.pFail >= theta) firstAlert = w.elapsed / 60;
+      if (policy === "act" && pr.pFail >= theta && amb.phase === "enroute" && w.elapsed - lastAct >= 180 && interventions < 2) {
+        const rec = recommend(obs, amb, mission, samples);
+        if (rec && rec.recommended) {
+          applyOption(amb, mission, rec.recommended);
+          actions.push({ at: w.elapsed / 60, label: rec.recommended.label });
+          interventions++;
+          lastAct = w.elapsed;
+        }
+      }
+      nextPred += 30;
+    }
+    moveAmbulance(w, amb, mission, dt, null);
+    stepWorld(w, dt);
+  }
+  let ttc = amb.ttc;
+  if (ttc === null) ttc = w.elapsed / 60;
+  const limit = limitOf(spec.mission);
+  return { ttc: ttc, limit: limit, failed: ttc > limit, hist: hist, firstAlert: firstAlert, actions: actions };
+}
+
+const Engine = {
+  mulberry32, gauss, hashSeed, clamp, NODES, NODE_BY_ID, EDGES, E_COUNT, ADJ, NEIGH, edgeId, HOSPITALS, HOSP_BY_ID, ACUITY,
+  VIEW_W, VIEW_H, LON0, LON1, LAT0, LAT1, ED_BASE_MIN, ED_PER_AMB_MIN,
+  histCong, histMult, weatherAdd, ambSpeed, trafficSpeed, dijkstra, kPaths, pathEdges,
+  createWorld, applyEvent, applyDueEvents, stepWorld, createAmbulance, moveAmbulance, ambulancePoint,
+  observe, forecastC, makeSamples, predict, recommend, attribute, applyOption, eligibility, limitOf, anchorOf,
+  scenarioAMB204, generateMission, runHeadless,
+};
+if (typeof module !== "undefined") module.exports = Engine;
+
+</script>
+<script>
+(function () {
+  const E = Engine;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const $ = function (id) { return document.getElementById(id); };
+
+  const FACTOR_LABELS = {
+    traffic: "Traffic building up",
+    hospital: "ED queue at destination",
+    bottleneck: "Usual rush-hour bottleneck",
+    routing: "Route choice",
+    closure: "Road closure",
+    weather: "Rain",
+  };
+  const FACTOR_ORDER = ["traffic", "hospital", "bottleneck", "routing", "closure", "weather"];
+  const SEVERITY = { stroke: 1, cardiac: 1, trauma: 0.9, routine: 0.4 };
+
+  const LABEL_POS = {
+    miyapur: [10, -10, "start"], kukatpally: [0, -32, "middle"], moosapet: [-10, -9, "end"], balanagar: [10, -9, "start"],
+    erragadda: [-11, 5, "end"], kondapur: [-10, -10, "end"], hitech: [-11, 17, "end"], madhapur: [-10, 21, "end"],
+    gachibowli: [0, 30, "middle"], jubilee: [-16, 24, "end"], ameerpet: [14, 26, "start"], begumpet: [8, -11, "start"],
+    secunderabad: [16, -18, "start"], punjagutta: [-12, 19, "end"], banjara: [-11, 4, "end"], tolichowki: [-10, 17, "end"],
+    mehdipatnam: [0, 23, "middle"], lakdikapul: [10, 19, "start"], koti: [18, 5, "start"], tarnaka: [0, -12, "middle"],
+    uppal: [0, 23, "middle"],
+  };
+
+  // ---------- helpers ----------
+  function el(tag, attrs, parent) {
+    const node = document.createElementNS(SVG_NS, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(node);
+    return node;
+  }
+  function fmtClock(sec) {
+    const s = Math.floor(sec) % 86400;
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const ss = s % 60;
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(ss).padStart(2, "0");
+  }
+  function fmtMin(x) { return x.toFixed(1) + " min"; }
+  function stateOf(p, theta) {
+    if (p >= theta) return "critical";
+    if (p >= 0.5) return "risk";
+    return "stable";
+  }
+  const STATE_TEXT = { stable: "Stable", risk: "At risk", critical: "Critical" };
+  const STATE_COLOR = { stable: "var(--stable)", risk: "var(--risk)", critical: "var(--crit)" };
+  const STATE_HEX = { stable: "#1D8A57", risk: "#E3A01B", critical: "#C4352A" };
+  function congColor(c) {
+    if (c < 0.3) return "#3E9E68";
+    if (c < 0.52) return "#E3A01B";
+    if (c < 0.72) return "#DE6428";
+    return "#B8281F";
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, function (ch) {
+      if (ch === "&") return "&amp;";
+      if (ch === "<") return "&lt;";
+      if (ch === ">") return "&gt;";
+      return "&quot;";
+    });
+  }
+  function median(arr) {
+    if (arr.length === 0) return null;
+    const v = arr.slice().sort(function (a, b) { return a - b; });
+    return v[Math.floor(v.length / 2)];
+  }
+
+  // ---------- app state ----------
+  const app = {
+    spec: null, mission: null, originalMission: null, world: null, amb: null,
+    predRng: null, pred: null, attr: null, rec: null,
+    hist: [], marks: [], logItems: [], userEvents: [],
+    firstAlert: null, breached: false, lastState: "stable", lastStateLog: -1e9,
+    dismissedUntil: -1, dismissP: 0, approvals: 0, running: true, speed: 30,
+    clickMode: "jam", acc: 0, needPredict: false, lastPredElapsed: -1e9, lastRecElapsed: -1e9,
+    done: false, noActionTTC: null, hoverEdge: null, pausedFor: null, autoPause: true,
+  };
+
+  // ---------- map construction ----------
+  const map = $("map");
+  const layers = {};
+  const edgeEls = [];
+  const hospEls = {};
+  let ambEls = null;
+
+  function buildMap() {
+    map.setAttribute("viewBox", "0 0 " + E.VIEW_W + " " + E.VIEW_H);
+    map.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    el("rect", { x: -500, y: -500, width: E.VIEW_W + 1000, height: E.VIEW_H + 1000, fill: "#E6EAE3" }, map);
+    const lx = ((78.474 - E.LON0) / (E.LON1 - E.LON0)) * E.VIEW_W;
+    const ly = ((E.LAT1 - 17.424) / (E.LAT1 - E.LAT0)) * E.VIEW_H;
+    el("ellipse", { cx: lx, cy: ly, rx: 27, ry: 46, fill: "#C5D8E1" }, map);
+    const lake1 = el("text", { x: lx, y: ly - 2, "text-anchor": "middle", "font-size": 10.5, fill: "#56727F", "font-style": "italic" }, map);
+    lake1.textContent = "Hussain";
+    const lake2 = el("text", { x: lx, y: ly + 11, "text-anchor": "middle", "font-size": 10.5, fill: "#56727F", "font-style": "italic" }, map);
+    lake2.textContent = "Sagar";
+    ["casing", "route", "traffic", "suggest", "closures", "nodes", "hosp", "amb", "hits"].forEach(function (name) {
+      layers[name] = el("g", {}, map);
+    });
+    E.EDGES.forEach(function (e) {
+      const a = E.NODES[e.a];
+      const b = E.NODES[e.b];
+      const common = { x1: a.x, y1: a.y, x2: b.x, y2: b.y, "stroke-linecap": "round" };
+      let w = 5;
+      if (e.ff >= 45) w = 6.5;
+      const casing = el("line", Object.assign({ stroke: "#FFFFFF", "stroke-width": w + 5 }, common), layers.casing);
+      const traffic = el("line", Object.assign({ stroke: "#3E9E68", "stroke-width": w }, common), layers.traffic);
+      const hit = el("line", Object.assign({ class: "hit" }, common), layers.hits);
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2;
+      const closure = el("g", { transform: "translate(" + mx + "," + my + ")", visibility: "hidden" }, layers.closures);
+      el("circle", { r: 9, fill: "#fff", stroke: "#16202A", "stroke-width": 2 }, closure);
+      el("path", { d: "M-4,-4L4,4M4,-4L-4,4", stroke: "#C4352A", "stroke-width": 2.6, "stroke-linecap": "round" }, closure);
+      hit.addEventListener("mouseenter", function () { app.hoverEdge = e.idx; });
+      hit.addEventListener("mousemove", function (ev) { showTip(e.idx, ev); });
+      hit.addEventListener("mouseleave", function () { app.hoverEdge = null; $("tip").hidden = true; });
+      hit.addEventListener("click", function () { onEdgeClick(e.idx); });
+      edgeEls.push({ traffic: traffic, casing: casing, closure: closure, width: w, lastColor: "" });
+    });
+    const hospNodes = new Set(E.HOSPITALS.map(function (h) { return h.node; }));
+    E.NODES.forEach(function (n) {
+      const pos = LABEL_POS[n.id];
+      if (!hospNodes.has(n.idx)) {
+        el("circle", { cx: n.x, cy: n.y, r: 3.6, fill: "#fff", stroke: "#8E978F", "stroke-width": 1.4 }, layers.nodes);
+        const t = el("text", { x: n.x + pos[0], y: n.y + pos[1], "text-anchor": pos[2], class: "nodelabel" }, layers.nodes);
+        t.textContent = n.name;
+      }
+    });
+    E.HOSPITALS.forEach(function (h) {
+      const n = E.NODES[h.node];
+      const pos = LABEL_POS[n.id];
+      const g = el("g", {}, layers.hosp);
+      el("rect", { x: n.x - 11, y: n.y - 11, width: 22, height: 22, rx: 5, fill: "#16202A" }, g);
+      const letter = el("text", { x: n.x, y: n.y + 4.5, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#fff" }, g);
+      letter.textContent = h.id;
+      const name = el("text", { x: n.x + pos[0], y: n.y + pos[1], "text-anchor": pos[2], class: "hosplabel" }, g);
+      name.textContent = h.name;
+      const sub = el("text", { x: n.x + pos[0], y: n.y + pos[1] + 14, "text-anchor": pos[2], class: "hospsub" }, g);
+      hospEls[h.id] = { g: g, sub: sub, name: name, rect: g.firstChild };
+    });
+    const pickup = el("circle", { r: 7, fill: "none", stroke: "#16202A", "stroke-width": 2, "stroke-dasharray": "3 3" }, layers.amb);
+    const halo = el("circle", { r: 15, class: "halo", fill: STATE_HEX.stable }, layers.amb);
+    const body = el("circle", { r: 9, fill: "#fff", stroke: "#16202A", "stroke-width": 2.5 }, layers.amb);
+    const dot = el("circle", { r: 4.5, fill: STATE_HEX.stable }, layers.amb);
+    ambEls = { pickup: pickup, halo: halo, body: body, dot: dot };
+    app.routeHalo = el("polyline", { fill: "none", stroke: "#16202A", "stroke-width": 15, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.9 }, layers.route);
+    app.suggestLine = el("polyline", { fill: "none", stroke: "#5A3ECF", "stroke-width": 4.5, "stroke-dasharray": "1 9", "stroke-linecap": "round", "stroke-linejoin": "round", visibility: "hidden" }, layers.suggest);
+  }
+
+  function showTip(e, ev) {
+    const edge = E.EDGES[e];
+    const w = app.world;
+    const tip = $("tip");
+    const c = w.c[e];
+    const speed = E.trafficSpeed(e, c, w.rain);
+    const onRoute = app.amb && app.amb.phase === "enroute" && routeEdgeSet().has(e);
+    let html = "<b>" + escapeHtml(edge.road) + "</b>, " + escapeHtml(edge.label) + " (" + edge.len.toFixed(1) + " km)<br>";
+    if (w.closed.has(e)) {
+      html += "Closed<br>";
+    } else {
+      html += "Traffic moving at " + Math.round(speed) + " km/h, free flow " + edge.ff + "<br>";
+    }
+    html += "Usual evening peak adds " + Math.round((edge.peak - 1) * 100) + "% travel time";
+    if (onRoute) html += "<br>On the ambulance's route";
+    if (w.closed.has(e)) html += "<br><span style='opacity:.75'>Click to reopen</span>";
+    else if (app.clickMode === "jam") html += "<br><span style='opacity:.75'>Click to add a jam here</span>";
+    else html += "<br><span style='opacity:.75'>Click to close this road</span>";
+    tip.innerHTML = html;
+    tip.hidden = false;
+    const box = $("mapwrap").getBoundingClientRect();
+    let x = ev.clientX - box.left + 14;
+    let y = ev.clientY - box.top + 14;
+    if (x > box.width - 290) x = ev.clientX - box.left - 290;
+    if (y > box.height - 110) y = ev.clientY - box.top - 110;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+
+  function routeEdgeSet() {
+    const s = new Set();
+    const amb = app.amb;
+    if (!amb || amb.phase !== "enroute") return s;
+    for (let i = amb.i; i + 1 < amb.path.length; i++) s.add(E.edgeId(amb.path[i], amb.path[i + 1]));
+    return s;
+  }
+
+  // ---------- mission lifecycle ----------
+  function loadSpec(spec) {
+    app.spec = spec;
+    app.mission = Object.assign({}, spec.mission);
+    app.originalMission = Object.assign({}, spec.mission);
+    app.world = E.createWorld({ mission: app.mission, events: spec.events });
+    app.amb = E.createAmbulance(app.world, app.mission);
+    app.predRng = E.mulberry32(E.hashSeed(app.mission.seed, "live-pred"));
+    app.hist = [];
+    app.marks = [];
+    app.logItems = [];
+    app.userEvents = [];
+    app.firstAlert = null;
+    app.breached = false;
+    app.lastState = "stable";
+    app.lastStateLog = -1e9;
+    app.dismissedUntil = -1;
+    app.approvals = 0;
+    app.acc = 0;
+    app.done = false;
+    app.noActionTTC = null;
+    app.rec = null;
+    app.pausedFor = null;
+    app.lastRecElapsed = -1e9;
+    app.running = true;
+    $("btnPlay").textContent = "Pause";
+    const h = E.HOSP_BY_ID[app.mission.hospital];
+    const via = app.amb.path.slice(1, -1).map(function (i) { return E.NODES[i].name; }).join(", ");
+    addLog("Dispatched to " + h.name + " on the fastest traffic-aware route, via " + via, "world");
+    const pick = E.NODES[app.mission.pickup];
+    ambEls.pickup.setAttribute("cx", pick.x);
+    ambEls.pickup.setAttribute("cy", pick.y);
+    syncSettings();
+    updateFeedButtons();
+    predictNow(true);
+    renderPanel();
+  }
+
+  function addLog(text, kind) {
+    app.logItems.unshift({ clock: app.world.clock, text: text, kind: kind || "world" });
+    if (app.logItems.length > 60) app.logItems.pop();
+    renderLog();
+  }
+  function markChart(label) {
+    app.marks.push({ t: app.world.elapsed / 60, label: label });
+  }
+  function worldLog(msg) {
+    addLog(msg, "world");
+    if (msg.indexOf("Slowdown") === 0 || msg.indexOf("ED:") !== -1 || msg.indexOf("Road closed") === 0 || msg.indexOf("Rain now") === 0 || msg.indexOf("feed stopped") !== -1) {
+      markChart(msg);
+    }
+  }
+
+  function userEvent(ev) {
+    ev.at = app.world.elapsed;
+    app.userEvents.push(Object.assign({}, ev));
+    const msg = E.applyEvent(app.world, ev);
+    addLog("You: " + msg, "you");
+    markChart(msg);
+    updateFeedButtons();
+    predictNow(true);
+    renderPanel();
+  }
+
+  function onEdgeClick(e) {
+    if (app.done) return;
+    const w = app.world;
+    if (w.closed.has(e)) { userEvent({ type: "reopen", edge: e }); return; }
+    if (app.clickMode === "jam") userEvent({ type: "accident", edge: e, peak: 0.75, duration: 1800 });
+    else userEvent({ type: "closure", edge: e });
+  }
+
+  function tick(dt) {
+    const w = app.world;
+    const amb = app.amb;
+    E.applyDueEvents(w, worldLog);
+    const wasPhase = amb.phase;
+    E.moveAmbulance(w, amb, app.mission, dt, function (m) { addLog(m, "world"); });
+    E.stepWorld(w, dt);
+    const limit = E.limitOf(app.mission);
+    if (!app.breached && amb.phase !== "incare" && w.elapsed / 60 > limit) {
+      app.breached = true;
+      addLog("Limit of " + fmtMin(limit) + " passed and the patient is not yet in care", "system");
+      markChart("Limit passed");
+    }
+    if (w.elapsed - app.lastPredElapsed >= 10) app.needPredict = true;
+    if (wasPhase !== "incare" && amb.phase === "incare") finishMission();
+  }
+
+  function finishMission() {
+    app.done = true;
+    app.running = false;
+    app.needPredict = true;
+    $("btnPlay").textContent = "Restart";
+    if (app.approvals > 0) {
+      const spec = {
+        mission: Object.assign({}, app.originalMission, { acuity: app.mission.acuity, targetMin: app.mission.targetMin, delta: app.mission.delta }),
+        events: app.spec.events.concat(app.userEvents),
+      };
+      const base = E.runHeadless(spec, app.mission.theta, "none", 1);
+      app.noActionTTC = base.ttc;
+    }
+  }
+
+  // ---------- prediction ----------
+  function predictNow(forceRec) {
+    const w = app.world;
+    const amb = app.amb;
+    const obs = E.observe(w);
+    const samples = E.makeSamples(app.predRng, 200);
+    const pred = E.predict(obs, amb, app.mission, samples);
+    const attr = E.attribute(obs, amb, app.mission);
+    app.pred = pred;
+    app.attr = attr;
+    app.lastPredElapsed = w.elapsed;
+    app.needPredict = false;
+    const t = w.elapsed / 60;
+    if (amb.phase !== "incare") app.hist.push([t, pred.pFail]);
+    const theta = app.mission.theta;
+    const st = stateOf(pred.pFail, theta);
+    const wantRec = forceRec || st !== "stable" || w.elapsed - app.lastRecElapsed >= 60;
+    if (amb.phase === "enroute" && wantRec) {
+      app.rec = E.recommend(obs, amb, app.mission, samples);
+      app.lastRecElapsed = w.elapsed;
+    }
+    if (amb.phase !== "enroute") app.rec = null;
+    if (amb.phase !== "incare") {
+      if (st === "critical" && app.firstAlert === null) {
+        app.firstAlert = t;
+        addLog("Alert: " + Math.round(pred.pFail * 100) + "% chance of missing the limit. " + topCauses(attr), "system");
+        markChart("Alert raised");
+      } else if (st !== app.lastState && w.elapsed - app.lastStateLog > 45) {
+        if (st === "risk") addLog("At risk: " + Math.round(pred.pFail * 100) + "% chance of missing the limit. " + topCauses(attr), "system");
+        if (st === "stable" && app.lastState !== "stable") addLog("Back to stable: " + Math.round(pred.pFail * 100) + "% risk", "system");
+        if (st === "critical" && app.lastState !== "critical") addLog("Critical again: " + Math.round(pred.pFail * 100) + "% risk", "system");
+        app.lastStateLog = w.elapsed;
+      }
+      app.lastState = st;
+    }
+  }
+
+  function topCauses(attr) {
+    const list = FACTOR_ORDER.map(function (k) { return [k, attr[k]]; })
+      .filter(function (x) { return x[1] >= 1; })
+      .sort(function (a, b) { return b[1] - a[1]; })
+      .slice(0, 2);
+    if (list.length === 0) return "";
+    return "Main causes: " + list.map(function (x) { return FACTOR_LABELS[x[0]].toLowerCase() + " (+" + x[1].toFixed(1) + " min)"; }).join(", ") + ".";
+  }
+
+  function maybePauseForDecision() {
+    const opt = visibleRecommendation();
+    if (!opt) return;
+    if (stateOf(app.pred.pFail, app.mission.theta) !== "critical") return;
+    const key = opt.kind + ":" + opt.hid + ":" + opt.plan.nodes.join(",");
+    if (app.pausedFor === key) return;
+    app.pausedFor = key;
+    if (app.running && app.autoPause) {
+      app.running = false;
+      $("btnPlay").textContent = "Play";
+      addLog("Paused so you can review the recommendation. Approve, dismiss, or press Play.", "system");
+    }
+  }
+
+  function visibleRecommendation() {
+    const rec = app.rec;
+    if (!rec || !rec.recommended || !app.pred || app.done) return null;
+    const p = app.pred.pFail;
+    const st = stateOf(p, app.mission.theta);
+    const dismissed = app.world.elapsed < app.dismissedUntil && p < app.dismissP + 0.1;
+    if (dismissed) return null;
+    if (st === "critical") return rec.recommended;
+    if (st === "risk" && rec.recommended.pFail < p - 0.3) return rec.recommended;
+    return null;
+  }
+
+  function approve() {
+    const opt = visibleRecommendation();
+    if (!opt) return;
+    const before = app.mission.hospital;
+    E.applyOption(app.amb, app.mission, opt);
+    app.approvals += 1;
+    app.rec = null;
+    if (opt.hid !== before) {
+      addLog("You approved: " + opt.label + ". Crew notified and pre-alert sent to " + E.HOSP_BY_ID[opt.hid].name + " ED.", "you");
+      markChart("Switched to " + E.HOSP_BY_ID[opt.hid].name);
+    } else {
+      addLog("You approved: " + opt.label + ". New route sent to crew.", "you");
+      markChart("Rerouted");
+    }
+    updateFeedButtons();
+    predictNow(true);
+    renderPanel();
+  }
+
+  function dismiss() {
+    app.dismissedUntil = app.world.elapsed + 180;
+    app.dismissP = app.pred.pFail;
+    addLog("You dismissed the recommendation for 3 minutes", "you");
+    renderPanel();
+  }
+
+  function notifyTraffic() {
+    const amb = app.amb;
+    if (amb.phase !== "enroute") return;
+    const next = E.NODES[amb.path[Math.min(amb.path.length - 1, amb.i + 1)]].name;
+    addLog("You requested signal priority near " + next + " from traffic control. Simulated only, no effect on traffic.", "you");
+  }
+
+  // ---------- rendering: map ----------
+  function renderMap() {
+    const w = app.world;
+    const amb = app.amb;
+    for (let e = 0; e < E.E_COUNT; e++) {
+      const r = edgeEls[e];
+      let color = congColor(w.c[e]);
+      if (w.closed.has(e)) color = "#9AA29B";
+      if (color !== r.lastColor) { r.traffic.setAttribute("stroke", color); r.lastColor = color; }
+      const closedNow = w.closed.has(e);
+      r.closure.setAttribute("visibility", closedNow ? "visible" : "hidden");
+      r.traffic.setAttribute("stroke-dasharray", closedNow ? "6 6" : "none");
+    }
+    const p = E.ambulancePoint(amb);
+    if (amb.phase === "enroute") {
+      const pts = [p.x + "," + p.y];
+      for (let i = amb.i + 1; i < amb.path.length; i++) {
+        const n = E.NODES[amb.path[i]];
+        pts.push(n.x + "," + n.y);
+      }
+      app.routeHalo.setAttribute("points", pts.join(" "));
+      app.routeHalo.setAttribute("visibility", "visible");
+    } else {
+      app.routeHalo.setAttribute("visibility", "hidden");
+    }
+    const opt = visibleRecommendation();
+    if (opt && amb.phase === "enroute") {
+      const pts = [p.x + "," + p.y];
+      opt.plan.nodes.forEach(function (i) { const n = E.NODES[i]; pts.push(n.x + "," + n.y); });
+      app.suggestLine.setAttribute("points", pts.join(" "));
+      app.suggestLine.setAttribute("visibility", "visible");
+    } else {
+      app.suggestLine.setAttribute("visibility", "hidden");
+    }
+    let st = "stable";
+    if (app.pred) st = stateOf(app.pred.pFail, app.mission.theta);
+    ambEls.halo.setAttribute("cx", p.x);
+    ambEls.halo.setAttribute("cy", p.y);
+    ambEls.halo.setAttribute("fill", STATE_HEX[st]);
+    ambEls.halo.setAttribute("visibility", amb.phase === "incare" ? "hidden" : "visible");
+    ambEls.body.setAttribute("cx", p.x);
+    ambEls.body.setAttribute("cy", p.y);
+    ambEls.dot.setAttribute("cx", p.x);
+    ambEls.dot.setAttribute("cy", p.y);
+    ambEls.dot.setAttribute("fill", amb.phase === "incare" ? "#16202A" : STATE_HEX[st]);
+    const need = E.ACUITY[app.mission.acuity].needs;
+    E.HOSPITALS.forEach(function (h) {
+      const hs = w.hospitals[h.id];
+      const els = hospEls[h.id];
+      let sub = hs.q + " waiting";
+      if (hs.q === 1) sub = "1 waiting";
+      if (!hs.feedUp) sub = "feed down, last " + hs.lastQ + " waiting";
+      if (need && h.caps.indexOf(need) === -1) sub = "no " + E.ACUITY[app.mission.acuity].unit;
+      if (els.sub.textContent !== sub) els.sub.textContent = sub;
+      const eligible = !need || h.caps.indexOf(need) !== -1;
+      els.g.setAttribute("class", eligible ? "" : "faded");
+      const isDest = h.id === app.mission.hospital;
+      els.rect.setAttribute("fill", isDest ? "#5A3ECF" : "#16202A");
+    });
+    $("clock").textContent = fmtClock(w.clock);
+    $("elapsed").textContent = fmtMin(w.elapsed / 60);
+  }
+
+  // ---------- rendering: panel ----------
+  function renderPanel() {
+    const m = app.mission;
+    const pred = app.pred;
+    const amb = app.amb;
+    const limit = E.limitOf(m);
+    const h = E.HOSP_BY_ID[m.hospital];
+    const ac = E.ACUITY[m.acuity];
+    $("missionLine").textContent = app.spec.title.replace(/^[^:]+: /, m.id + ", ");
+    let phaseText = "En route to " + h.name;
+    if (amb.phase === "handover") phaseText = "At " + h.name + ", waiting for ED handover";
+    if (amb.phase === "incare") phaseText = "Handed over at " + h.name;
+    $("missionMeta").textContent = phaseText + ". " + ac.label + " target " + m.targetMin + " min to care, limit " + fmtMin(limit) + " with " + Math.round(m.delta * 100) + "% tolerance.";
+    const st = stateOf(pred.pFail, m.theta);
+    const pctEl = $("pct");
+    pctEl.textContent = Math.round(pred.pFail * 100) + "%";
+    pctEl.style.color = STATE_COLOR[st];
+    $("state").textContent = STATE_TEXT[st];
+    $("state").style.color = STATE_COLOR[st];
+    if (amb.phase === "incare") {
+      pctEl.textContent = amb.ttc > limit ? "Missed" : "Met";
+      pctEl.style.color = amb.ttc > limit ? "var(--crit)" : "var(--stable)";
+      pctEl.style.fontSize = "46px";
+      $("state").textContent = "Mission complete";
+      $("state").style.color = "var(--ink)";
+      $("stateSub").textContent = "Time to care " + fmtMin(amb.ttc) + " against a " + fmtMin(limit) + " limit";
+    } else {
+      pctEl.style.fontSize = "";
+      const severity = SEVERITY[m.acuity];
+      const preventable = app.rec && app.rec.recommended ? 1 : 0.5;
+      const score = pred.pFail * severity * preventable;
+      let level = "";
+      if (st !== "stable") {
+        if (score >= 0.45) level = " Escalated to dispatcher.";
+        else level = " Shown on dashboard only.";
+      }
+      $("stateSub").textContent = "chance of missing the " + fmtMin(limit) + " limit." + level;
+    }
+    $("ttc").textContent = fmtMin(pred.mean);
+    $("band").textContent = "likely " + pred.p10.toFixed(0) + " to " + pred.p90.toFixed(0) + " min";
+    $("conf").textContent = pred.confidence.toFixed(2);
+    $("confNote").textContent = pred.feedKnown ? "all feeds current" : "hospital feed stale";
+
+    const out = $("outcome");
+    if (amb.phase === "incare") {
+      let html = "";
+      if (amb.ttc <= limit) {
+        html = "<div class='outcome good'>Patient in care at " + fmtMin(amb.ttc) + ", " + (limit - amb.ttc).toFixed(1) + " min inside the limit.";
+      } else {
+        html = "<div class='outcome bad'>Patient in care at " + fmtMin(amb.ttc) + ", " + (amb.ttc - limit).toFixed(1) + " min over the limit.";
+      }
+      if (app.noActionTTC !== null) {
+        html += " Replaying the same traffic without your approved change: " + fmtMin(app.noActionTTC) + " (" + (app.noActionTTC - amb.ttc).toFixed(1) + " min saved).";
+      }
+      if (app.firstAlert !== null) html += " First alert came " + (limit - app.firstAlert).toFixed(1) + " min before the limit.";
+      html += "</div>";
+      out.innerHTML = html;
+    } else {
+      out.innerHTML = "";
+    }
+    renderChart();
+    renderWhy();
+    renderRec();
+  }
+
+  function renderWhy() {
+    const attr = app.attr;
+    const box = $("why");
+    const max = Math.max(4, FACTOR_ORDER.reduce(function (mx, k) { return Math.max(mx, attr[k]); }, 0));
+    let html = "";
+    FACTOR_ORDER.forEach(function (k) {
+      const v = attr[k];
+      let color = "#B9C0B6";
+      if (v >= 4) color = "#C4352A";
+      else if (v >= 1.5) color = "#E3A01B";
+      const width = Math.min(100, (v / max) * 100);
+      html += "<div class='whyrow'><span class='wl'>" + FACTOR_LABELS[k] + "</span><span class='wbar'><i style='width:" + width.toFixed(1) + "%;background:" + color + "'></i></span><span class='wm'>+" + v.toFixed(1) + "</span></div>";
+    });
+    box.innerHTML = html;
+  }
+
+  function renderRec() {
+    const box = $("rec");
+    const amb = app.amb;
+    const rec = app.rec;
+    if (amb.phase === "incare") { box.innerHTML = "<p class='muted'>Mission complete.</p>"; return; }
+    if (amb.phase === "handover") { box.innerHTML = "<p class='muted'>The ambulance is at the hospital. Only the handover queue matters now.</p>"; return; }
+    const p = app.pred.pFail;
+    const st = stateOf(p, app.mission.theta);
+    const opt = visibleRecommendation();
+    let html = "";
+    if (opt && rec) {
+      const stay = rec.stay;
+      const hosp = E.HOSP_BY_ID[opt.hid];
+      const hs = app.world.hospitals[opt.hid];
+      const quiet = SEVERITY[app.mission.acuity] < 0.6;
+      html += "<div class='reccard" + (quiet ? " quiet" : "") + "'>";
+      html += "<p class='rtitle'>" + escapeHtml(opt.label) + "</p>";
+      html += "<p class='rsub'>Expected time to care " + fmtMin(opt.mean) + " instead of " + fmtMin(stay.mean) + ", saving " + (stay.mean - opt.mean).toFixed(1) + " min. Risk falls from " + Math.round(stay.pFail * 100) + "% to " + Math.round(opt.pFail * 100) + "%.</p>";
+      if (opt.kind === "hospital") {
+        const need = E.ACUITY[app.mission.acuity].needs;
+        let unit = "can receive this patient";
+        if (need) unit = "has a " + E.ACUITY[app.mission.acuity].unit;
+        let q = hs.q + " ambulances waiting";
+        if (hs.q === 1) q = "1 ambulance waiting";
+        if (!hs.feedUp) q = "a stale status feed";
+        html += "<p class='rsub'>" + hosp.name + " " + unit + " and " + q + ".</p>";
+      }
+      html += "<div class='actions'><button class='btn go' id="+"'approveBtn'>Approve and send to crew</button><button class='btn' id='dismissBtn'>Dismiss for 3 min</button><button class='btn quiet' id='trafficBtn'>Ask traffic control for signal priority</button></div>";
+      html += "</div>";
+    } else if (st === "stable") {
+      html += "<p class='muted' style='margin:0'>None needed. The current plan is on track.</p>";
+    } else if (app.world.elapsed < app.dismissedUntil) {
+      html += "<p class='muted' style='margin:0'>Recommendation dismissed. It returns if risk rises by 10 points or after 3 minutes.</p>";
+    } else {
+      html += "<p style='margin:0'>No option saves 3 or more minutes while also lowering risk. Keep monitoring.</p>";
+    }
+    if (rec && st !== "stable") {
+      html += "<details class='cmp'" + (opt ? "" : " open") + "><summary>Compare all " + rec.options.length + " options</summary>";
+      html += "<table class='opts'><thead><tr><th>Option</th><th class='num'>Time to care</th><th class='num'>Risk</th></tr></thead><tbody>";
+      rec.options.slice(0, 6).forEach(function (o) {
+        const sel = opt && o === opt;
+        html += "<tr" + (sel ? " class='sel'" : "") + "><td>" + escapeHtml(o.label) + "</td><td class='num'>" + fmtMin(o.mean) + "</td><td class='num'>" + Math.round(o.pFail * 100) + "%</td></tr>";
+      });
+      html += "</tbody></table>";
+      if (rec.ineligible.length > 0) {
+        html += "<p class='small muted' style='margin:6px 0 0'>Not considered: " + rec.ineligible.map(function (x) { return E.HOSP_BY_ID[x.hid].name + " (" + x.reason + ")"; }).join(", ") + ".</p>";
+      }
+      html += "</details>";
+    }
+    const prevDetails = box.querySelector("details.cmp");
+    let keepOpen = null;
+    if (prevDetails) keepOpen = prevDetails.open;
+    box.innerHTML = html;
+    const newDetails = box.querySelector("details.cmp");
+    if (newDetails && keepOpen !== null && opt) newDetails.open = keepOpen;
+    const a = $("approveBtn");
+    if (a) a.addEventListener("click", approve);
+    const d = $("dismissBtn");
+    if (d) d.addEventListener("click", dismiss);
+    const t = $("trafficBtn");
+    if (t) t.addEventListener("click", notifyTraffic);
+  }
+
+  function renderLog() {
+    const box = $("log");
+    box.innerHTML = app.logItems.map(function (it) {
+      return "<li class='" + it.kind + "'><time>" + fmtClock(it.clock).slice(0, 5) + "</time><span>" + escapeHtml(it.text) + "</span></li>";
+    }).join("");
+  }
+
+  function renderChart() {
+    const svg = $("chart");
+    const Wd = 390, Ht = 196, L = 38, R = 12, T = 18, B = 44;
+    const m = app.mission;
+    const limit = E.limitOf(m);
+    const nowT = app.world.elapsed / 60;
+    let xmax = Math.max(limit + 6, nowT + 4);
+    if (app.amb.phase === "incare") xmax = Math.max(limit + 6, app.amb.ttc + 3);
+    xmax = Math.ceil(xmax / 10) * 10;
+    const x = function (t) { return L + (t / xmax) * (Wd - L - R); };
+    const y = function (p) { return T + (1 - p) * (Ht - T - B); };
+    let s = "";
+    [0, 0.5, 1].forEach(function (p) {
+      s += "<line x1='" + L + "' x2='" + (Wd - R) + "' y1='" + y(p) + "' y2='" + y(p) + "' stroke='#E4E8E1'/>";
+      s += "<text x='" + (L - 6) + "' y='" + (y(p) + 4) + "' text-anchor='end' font-size='11' fill='#737D86'>" + Math.round(p * 100) + "%</text>";
+    });
+    for (let t = 0; t <= xmax; t += 10) {
+      s += "<text x='" + x(t) + "' y='" + (Ht - B + 15) + "' text-anchor='middle' font-size='11' fill='#737D86'>" + t + "</text>";
+    }
+    s += "<text x='" + (Wd - R) + "' y='" + (Ht - B + 15) + "' text-anchor='end' font-size='11' fill='#737D86' dx='0' dy='0'></text>";
+    s += "<line x1='" + L + "' x2='" + (Wd - R) + "' y1='" + y(m.theta) + "' y2='" + y(m.theta) + "' stroke='#C4352A' stroke-dasharray='4 4' stroke-width='1.2'/>";
+    s += "<text x='" + (Wd - R - 2) + "' y='" + (y(m.theta) - 5) + "' text-anchor='end' font-size='11' fill='#C4352A'>Alert at " + Math.round(m.theta * 100) + "%</text>";
+    s += "<line x1='" + x(limit) + "' x2='" + x(limit) + "' y1='" + T + "' y2='" + (Ht - B) + "' stroke='#16202A' stroke-dasharray='2 3'/>";
+    s += "<text x='" + (x(limit) + 4) + "' y='" + (T + 2) + "' font-size='11' fill='#16202A'>Limit " + limit.toFixed(1) + "</text>";
+    const hist = app.hist;
+    if (hist.length > 1) {
+      for (let i = 1; i < hist.length; i++) {
+        const stc = stateOf(hist[i][1], m.theta);
+        s += "<line x1='" + x(hist[i - 1][0]).toFixed(1) + "' y1='" + y(hist[i - 1][1]).toFixed(1) + "' x2='" + x(hist[i][0]).toFixed(1) + "' y2='" + y(hist[i][1]).toFixed(1) + "' stroke='" + STATE_HEX[stc] + "' stroke-width='2.6' stroke-linecap='round'/>";
+      }
+    }
+    if (app.firstAlert !== null) {
+      const fa = app.firstAlert;
+      let pa = m.theta;
+      for (const pt of hist) { if (Math.abs(pt[0] - fa) < 1e-6) pa = pt[1]; }
+      if (fa < limit) {
+        const by = Ht - B + 26;
+        s += "<line x1='" + x(fa) + "' x2='" + x(limit) + "' y1='" + by + "' y2='" + by + "' stroke='#5A3ECF' stroke-width='1.5'/>";
+        s += "<line x1='" + x(fa) + "' x2='" + x(fa) + "' y1='" + (by - 4) + "' y2='" + (by + 4) + "' stroke='#5A3ECF' stroke-width='1.5'/>";
+        s += "<line x1='" + x(limit) + "' x2='" + x(limit) + "' y1='" + (by - 4) + "' y2='" + (by + 4) + "' stroke='#5A3ECF' stroke-width='1.5'/>";
+        let lx = (x(fa) + x(limit)) / 2;
+        s += "<text x='" + lx + "' y='" + (by + 14) + "' text-anchor='middle' font-size='11.5' font-weight='600' fill='#5A3ECF'>" + (limit - fa).toFixed(1) + " min of warning before the limit</text>";
+      }
+      s += "<circle cx='" + x(fa) + "' cy='" + y(pa) + "' r='4.5' fill='#fff' stroke='#C4352A' stroke-width='2'/>";
+    }
+    app.marks.forEach(function (mk, i) {
+      const mx = x(mk.t);
+      s += "<g><title>" + escapeHtml(mk.label) + "</title><line x1='" + mx + "' x2='" + mx + "' y1='" + T + "' y2='" + (Ht - B) + "' stroke='#16202A' opacity='0.12'/>";
+      s += "<circle cx='" + mx + "' cy='" + (Ht - B) + "' r='3' fill='#16202A'/></g>";
+    });
+    svg.innerHTML = s;
+    let note = "Minutes since pickup. Grey ticks mark events; hover them for details.";
+    if (app.marks.length > 0) {
+      note = "Minutes since pickup. Events: " + app.marks.map(function (mk) { return mk.t.toFixed(1) + " min, " + mk.label; }).join("; ") + ".";
+    }
+    $("chartNote").textContent = note;
+  }
+
+  // ---------- controls ----------
+  function syncSettings() {
+    $("setAcuity").value = app.mission.acuity;
+    $("setTarget").value = app.mission.targetMin;
+    $("setDelta").value = Math.round(app.mission.delta * 100);
+    $("outDelta").textContent = Math.round(app.mission.delta * 100) + "%";
+    $("setTheta").value = Math.round(app.mission.theta * 100);
+    $("outTheta").textContent = Math.round(app.mission.theta * 100) + "%";
+  }
+  function updateFeedButtons() {
+    const w = app.world;
+    const rainBtn = $("btnRain");
+    if (w.rain > 0) { rainBtn.textContent = "Stop the rain"; rainBtn.setAttribute("aria-pressed", "true"); }
+    else { rainBtn.textContent = "Start heavy rain"; rainBtn.setAttribute("aria-pressed", "false"); }
+    const hs = w.hospitals[app.mission.hospital];
+    const feedBtn = $("btnFeed");
+    if (hs.feedUp) { feedBtn.textContent = "Cut destination's status feed"; feedBtn.setAttribute("aria-pressed", "false"); }
+    else { feedBtn.textContent = "Restore destination's status feed"; feedBtn.setAttribute("aria-pressed", "true"); }
+  }
+
+  function bindControls() {
+    $("btnScenario").addEventListener("click", function () { loadSpec(E.scenarioAMB204()); });
+    $("btnRandom").addEventListener("click", function () { loadSpec(E.generateMission(Math.floor(Math.random() * 100000) + 5000)); });
+    $("btnPlay").addEventListener("click", function () {
+      if (app.done) { loadSpec(app.spec); return; }
+      app.running = !app.running;
+      $("btnPlay").textContent = app.running ? "Pause" : "Play";
+    });
+    $("speed").addEventListener("change", function (ev) { app.speed = Number(ev.target.value); });
+    $("autoPause").addEventListener("change", function (ev) { app.autoPause = ev.target.checked; });
+    document.querySelectorAll(".seg button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        app.clickMode = b.dataset.mode;
+        document.querySelectorAll(".seg button").forEach(function (o) { o.setAttribute("aria-checked", o === b ? "true" : "false"); });
+        $("maphint").textContent = app.clickMode === "jam" ? "Click any road to add a jam" : "Click any road to close it";
+      });
+    });
+    $("btnRain").addEventListener("click", function () {
+      if (app.done) return;
+      if (app.world.rain > 0) userEvent({ type: "rain", mm: 0 });
+      else userEvent({ type: "rain", mm: 25 });
+    });
+    $("btnSurge").addEventListener("click", function () {
+      if (app.done) return;
+      userEvent({ type: "surge", hospital: app.mission.hospital, add: 4 });
+    });
+    $("btnFeed").addEventListener("click", function () {
+      if (app.done) return;
+      const hs = app.world.hospitals[app.mission.hospital];
+      if (hs.feedUp) userEvent({ type: "feedDown", hospital: app.mission.hospital });
+      else userEvent({ type: "feedUp", hospital: app.mission.hospital });
+    });
+    $("setAcuity").addEventListener("change", function (ev) {
+      app.mission.acuity = ev.target.value;
+      app.mission.targetMin = E.ACUITY[ev.target.value].target;
+      syncSettings();
+      addLog("You changed patient type to " + E.ACUITY[ev.target.value].label.toLowerCase() + "; target now " + app.mission.targetMin + " min", "you");
+      predictNow(true);
+      renderPanel();
+    });
+    $("setTarget").addEventListener("change", function (ev) {
+      const v = Math.max(10, Math.min(120, Number(ev.target.value) || app.mission.targetMin));
+      app.mission.targetMin = v;
+      syncSettings();
+      addLog("You set the target to " + v + " min", "you");
+      predictNow(true);
+      renderPanel();
+    });
+    $("setDelta").addEventListener("input", function (ev) {
+      app.mission.delta = Number(ev.target.value) / 100;
+      $("outDelta").textContent = ev.target.value + "%";
+      predictNow(true);
+      renderPanel();
+    });
+    $("setTheta").addEventListener("input", function (ev) {
+      app.mission.theta = Number(ev.target.value) / 100;
+      $("outTheta").textContent = ev.target.value + "%";
+      renderPanel();
+    });
+    document.querySelectorAll(".tabs button").forEach(function (b) {
+      b.addEventListener("click", function () { showTab(b.dataset.tab); });
+    });
+  }
+
+  function showTab(name) {
+    document.querySelectorAll(".tabs button").forEach(function (o) { o.setAttribute("aria-selected", o.dataset.tab === name ? "true" : "false"); });
+    ["live", "replay", "about"].forEach(function (t) { $("tab-" + t).hidden = t !== name; });
+    if (name === "live") $("tab-live").style.display = "";
+    else $("tab-live").style.display = "none";
+  }
+
+  // ---------- loop ----------
+  let lastTs = null;
+  function frame(ts) {
+    if (lastTs === null) lastTs = ts;
+    const realDt = Math.min(0.1, (ts - lastTs) / 1000);
+    lastTs = ts;
+    if (app.running && !app.done && $("tab-live").style.display !== "none") {
+      app.acc += realDt * app.speed;
+      let steps = 0;
+      while (app.acc >= 1 && steps < 200 && !app.done) {
+        tick(1);
+        app.acc -= 1;
+        steps++;
+      }
+      if (app.needPredict) { predictNow(false); maybePauseForDecision(); renderPanel(); }
+    } else if (app.needPredict) {
+      predictNow(false);
+      renderPanel();
+    }
+    renderMap();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- replay evaluation ----------
+  let replaySeedBase = 1000;
+  let replayRunning = false;
+  let lastReplay = null;
+
+  function firstAlertAt(hist, theta) {
+    for (const pt of hist) { if (pt[1] >= theta) return pt[0]; }
+    return null;
+  }
+
+  function metricsAt(results, theta) {
+    let F = 0, TP = 0, FP = 0;
+    const leads = [];
+    results.forEach(function (r) {
+      const fa = firstAlertAt(r.b.hist, theta);
+      if (r.b.failed) F++;
+      if (r.b.failed && fa !== null && fa < r.b.limit) { TP++; leads.push(r.b.limit - fa); }
+      if (!r.b.failed && fa !== null) FP++;
+    });
+    let precision = null;
+    if (TP + FP > 0) precision = TP / (TP + FP);
+    let recall = null;
+    if (F > 0) recall = TP / F;
+    return { F: F, TP: TP, FP: FP, recall: recall, precision: precision, medLead: median(leads), n: results.length };
+  }
+
+  async function runReplay() {
+    if (replayRunning) return;
+    replayRunning = true;
+    const n = Number($("repN").value);
+    const theta = Number($("repTheta").value) / 100;
+    const results = [];
+    $("btnReplay").disabled = true;
+    for (let i = 0; i < n; i++) {
+      const spec = E.generateMission(replaySeedBase + i);
+      const b = E.runHeadless(spec, theta, "none");
+      let a = null;
+      if (b.firstAlert !== null) a = E.runHeadless(spec, theta, "act");
+      results.push({ spec: spec, b: b, a: a });
+      $("repProg").style.width = (((i + 1) / n) * 100).toFixed(1) + "%";
+      $("repStatus").textContent = "Replaying " + (i + 1) + " of " + n;
+      if (i % 2 === 1) await new Promise(function (r) { setTimeout(r, 0); });
+    }
+    $("repStatus").textContent = "Mission set " + replaySeedBase + ", " + n + " missions";
+    lastReplay = { results: results, theta: theta };
+    renderReplay();
+    $("btnReplay").disabled = false;
+    replayRunning = false;
+  }
+
+  function renderReplay() {
+    const results = lastReplay.results;
+    const theta = lastReplay.theta;
+    const mt = metricsAt(results, theta);
+    let rescued = 0, acted = 0;
+    const saved = [];
+    let fpActed = 0, fpWorse = 0;
+    results.forEach(function (r) {
+      const fa = r.b.firstAlert;
+      if (r.b.failed && fa !== null && fa < r.b.limit && r.a) {
+        if (r.a.actions.length > 0) { acted++; saved.push(r.b.ttc - r.a.ttc); }
+        if (!r.a.failed) rescued++;
+      }
+      if (!r.b.failed && fa !== null && r.a && r.a.actions.length > 0) {
+        fpActed++;
+        if (r.a.failed) fpWorse++;
+      }
+    });
+    let brierSum = 0, brierN = 0;
+    const bins = [];
+    for (let i = 0; i < 10; i++) bins.push({ p: 0, y: 0, n: 0 });
+    results.forEach(function (r) {
+      const yv = r.b.failed ? 1 : 0;
+      r.b.hist.forEach(function (pt) {
+        brierSum += (pt[1] - yv) * (pt[1] - yv);
+        brierN++;
+        const bi = Math.min(9, Math.floor(pt[1] * 10));
+        bins[bi].p += pt[1];
+        bins[bi].y += yv;
+        bins[bi].n++;
+      });
+    });
+    const brier = brierSum / Math.max(1, brierN);
+    const pctS = function (x) { return x === null ? "n/a" : Math.round(x * 100) + "%"; };
+    const medLead = mt.medLead === null ? "n/a" : mt.medLead.toFixed(1);
+    let headline = "No failures occurred in this set.";
+    if (mt.F > 0) {
+      headline = "Caught " + mt.TP + " of " + mt.F + " failures before they happened";
+      if (mt.medLead !== null) headline += ", a median of " + medLead + " minutes early.";
+      else headline += ".";
+    }
+    let html = "<p class='headline'>" + headline + "</p>";
+    html += "<div class='stats'>";
+    html += "<div><b>" + pctS(mt.recall) + "</b><span>of failures flagged before the limit passed (recall)</span></div>";
+    html += "<div><b>" + pctS(mt.precision) + "</b><span>of alerts were followed by a real failure (precision)</span></div>";
+    html += "<div><b>" + rescued + " of " + mt.TP + "</b><span>caught failures prevented by approving the recommendation</span></div>";
+    html += "<div><b>" + (saved.length ? (saved.reduce(function (a, b) { return a + b; }, 0) / saved.length).toFixed(1) : "n/a") + " min</b><span>average time to care saved when an action was approved</span></div>";
+    html += "</div>";
+    html += "<p class='small muted' style='margin-top:10px'>" + mt.n + " missions, " + mt.F + " failures, " + mt.FP + " false alerts. Actions approved on false alerts: " + fpActed + ", of which " + fpWorse + " then failed. Brier score " + brier.toFixed(3) + " (lower is better; always guessing the base rate would score " + ((mt.F / mt.n) * (1 - mt.F / mt.n)).toFixed(3) + ").</p>";
+
+    html += "<div class='two'><div><h3>Choosing the alert threshold</h3><table class='data'><thead><tr><th>Alert at</th><th class='num'>Failures caught</th><th class='num'>Alerts that were real</th><th class='num'>False alerts</th><th class='num'>Median warning</th></tr></thead><tbody>";
+    [0.5, 0.6, 0.7, 0.8, 0.9].forEach(function (th) {
+      const x = metricsAt(results, th);
+      html += "<tr" + (Math.abs(th - theta) < 1e-6 ? " style='font-weight:600'" : "") + "><td>" + Math.round(th * 100) + "%</td><td class='num'>" + x.TP + " of " + x.F + "</td><td class='num'>" + pctS(x.precision) + "</td><td class='num'>" + x.FP + "</td><td class='num'>" + (x.medLead === null ? "n/a" : x.medLead.toFixed(1) + " min") + "</td></tr>";
+    });
+    html += "</tbody></table><p class='small muted'>Lower thresholds warn earlier and miss fewer failures but raise more false alerts. Recommendations in this replay used " + Math.round(theta * 100) + "%.</p></div>";
+
+    html += "<div><h3>Are the probabilities honest?</h3>" + calibrationSvg(bins) + "<p class='small muted'>Each dot groups every prediction in a 10% band. Dots on the diagonal mean a predicted 70% really fails about 70% of the time. Dot size shows how many predictions fell in the band.</p></div></div>";
+
+    html += "<h3 style='margin-top:28px'>Missions</h3><table class='data'><thead><tr><th>Mission</th><th>Patient</th><th class='num'>Limit</th><th class='num'>Time to care, no action</th><th>Result</th><th class='num'>First alert</th><th class='num'>Warning</th><th class='num'>With recommended action</th><th></th></tr></thead><tbody>";
+    results.forEach(function (r, i) {
+      const m = r.spec.mission;
+      const fa = r.b.firstAlert;
+      let warn = "";
+      if (r.b.failed && fa !== null && fa < r.b.limit) warn = (r.b.limit - fa).toFixed(1) + " min";
+      let withAct = "";
+      if (r.a && r.a.actions.length > 0) {
+        withAct = r.a.ttc.toFixed(1) + " min " + (r.a.failed ? "<span class='bad'>missed</span>" : "<span class='good'>met</span>");
+      } else if (r.a) {
+        withAct = "<span class='muted'>no better option</span>";
+      }
+      html += "<tr><td>" + m.id + "</td><td>" + E.ACUITY[m.acuity].label + "</td><td class='num'>" + r.b.limit.toFixed(1) + "</td><td class='num'>" + r.b.ttc.toFixed(1) + "</td><td>" + (r.b.failed ? "<span class='bad'>Missed</span>" : "<span class='good'>Met</span>") + "</td><td class='num'>" + (fa === null ? "" : fa.toFixed(1) + " min") + "</td><td class='num'>" + warn + "</td><td class='num'>" + withAct + "</td><td><button class='btn' data-watch='" + i + "'>Watch</button></td></tr>";
+    });
+    html += "</tbody></table>";
+    $("repResults").innerHTML = html;
+    document.querySelectorAll("[data-watch]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const r = results[Number(b.dataset.watch)];
+        loadSpec(r.spec);
+        showTab("live");
+      });
+    });
+  }
+
+  function calibrationSvg(bins) {
+    const S = 260, L = 36, T = 10, R = 10, B = 30;
+    const x = function (p) { return L + p * (S - L - R); };
+    const y = function (p) { return T + (1 - p) * (S - T - B); };
+    let s = "<svg viewBox='0 0 " + S + " " + S + "' style='width:100%;max-width:320px;display:block' role='img' aria-label='Calibration chart'>";
+    s += "<rect x='" + L + "' y='" + T + "' width='" + (S - L - R) + "' height='" + (S - T - B) + "' fill='none' stroke='#D7DCD3'/>";
+    s += "<line x1='" + x(0) + "' y1='" + y(0) + "' x2='" + x(1) + "' y2='" + y(1) + "' stroke='#9AA29B' stroke-dasharray='4 4'/>";
+    [0, 0.5, 1].forEach(function (p) {
+      s += "<text x='" + x(p) + "' y='" + (S - B + 14) + "' text-anchor='middle' font-size='10.5' fill='#737D86'>" + Math.round(p * 100) + "%</text>";
+      s += "<text x='" + (L - 5) + "' y='" + (y(p) + 4) + "' text-anchor='end' font-size='10.5' fill='#737D86'>" + Math.round(p * 100) + "%</text>";
+    });
+    s += "<text x='" + ((L + S - R) / 2) + "' y='" + (S - 3) + "' text-anchor='middle' font-size='11' fill='#45505B'>Predicted risk</text>";
+    let total = 0;
+    bins.forEach(function (b) { total += b.n; });
+    bins.forEach(function (b) {
+      if (b.n === 0) return;
+      const r = 3 + Math.sqrt(b.n / Math.max(1, total)) * 22;
+      s += "<circle cx='" + x(b.p / b.n) + "' cy='" + y(b.y / b.n) + "' r='" + r.toFixed(1) + "' fill='#16202A' opacity='0.75'><title>" + b.n + " predictions, observed failure rate " + Math.round((b.y / b.n) * 100) + "%</title></circle>";
+    });
+    s += "</svg>";
+    return s;
+  }
+
+  function bindReplay() {
+    $("btnReplay").addEventListener("click", runReplay);
+    $("btnReshuffle").addEventListener("click", function () {
+      replaySeedBase = 2000 + Math.floor(Math.random() * 90000);
+      $("repStatus").textContent = "Mission set " + replaySeedBase;
+      runReplay();
+    });
+    $("repTheta").addEventListener("input", function (ev) { $("repThetaOut").textContent = ev.target.value + "%"; });
+  }
+
+  // ---------- start ----------
+  buildMap();
+  bindControls();
+  bindReplay();
+  loadSpec(E.scenarioAMB204());
+  requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
